@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, String, Integer, Column
+from sqlalchemy import ForeignKey, String, Integer, Boolean, Column, Date
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -41,20 +41,21 @@ class User(Base):
     def __repr__(self):
         return f"User(id={self.id!r}, fullName={self.fullName!r}, email={self.email!r}, password={self.password!r}, Roles={self.Roles!r}))"
     
-class AnnualLeave(Base):
-    __tablename__ = "AnnualLeave"
+class HolidayRequests(Base):
+    __tablename__ = "HolidayRequests"
 
     id = Column(Integer, primary_key=True)
     team_id = Column(Integer, ForeignKey("Teams.id"))
     user_id = Column(Integer, ForeignKey("Users.id"))
-    name = Column(String)
     description = Column(String)
-    start_date = Column(String)
-    end_date = Column(String)
-
+    start_date = Column(Date)
+    end_date = Column(Date)
+    morning = Column(Boolean)
+    afternoon = Column(Boolean)
+    
     team = relationship("Team")
     user = relationship("User")
 
     #useful for debugging
     def __repr__(self):
-        return f"teamCalendar(id={self.id!r}, team_id={self.team_id!r}, user_id={self.user_id!r}, name={self.name!r}, description={self.description!r}, start_date={self.start_date!r}, end_date={self.end_date!r}))"    
+        return f"HolidayRequests(id={self.id!r}, team_id={self.team_id!r}, user_id={self.user_id!r}, name={self.name!r}, description={self.description!r}, start_date={self.start_date!r}, end_date={self.end_date!r}))"    
