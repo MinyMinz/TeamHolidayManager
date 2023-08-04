@@ -1,3 +1,9 @@
+Repo restructure following similar structure to the below:
+https://github.com/zhanymkanov/fastapi-best-practices#1-project-structure-consistent--predictable
+
+------------------------------------------------------------------------------
+ALEMBIC commands
+
 alembic revision --autogenerate -m "Inital Migration" 
 alembic upgrade head
 alembic upgrade firstFewCharactersInScriptName
