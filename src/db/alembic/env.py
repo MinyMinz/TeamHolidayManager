@@ -1,5 +1,4 @@
 import os
-
 from alembic import context
 from dotenv import load_dotenv
 from logging.config import fileConfig
@@ -26,14 +25,11 @@ if config.config_file_name is not None:
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
-from src.db.database import Base
-from src.user import models as userModels
-from src.holiday_requests import models as holidayRequestModels
+from db.database import Base
+from user import models as userModels
+from holiday_requests import models as holidayRequestModels
 
-userModelsMetadata = userModels.Base.metadata
-holidayRequestModelsMetadata = holidayRequestModels.Base.metadata
-
-target_metadata = [userModelsMetadata, holidayRequestModelsMetadata]
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

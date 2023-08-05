@@ -1,10 +1,11 @@
-from src.db.database import Base
+from db.database import Base
 from sqlalchemy import ForeignKey, String, Integer, Boolean, Column, Date
 from sqlalchemy.orm import relationship
 
 class HolidayRequests(Base):
     __tablename__ = "HolidayRequests"
 
+    id = Column(Integer, primary_key=True, index=True)
     team_id = Column(Integer, ForeignKey("Teams.id"))
     user_id = Column(Integer, ForeignKey("Users.id"))
     description = Column(String)
