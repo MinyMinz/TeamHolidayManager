@@ -34,7 +34,7 @@ jobs:
           
       - name: Run the py script
         run: |
-          python /src/main.py
+          python src/main.py
 
       - name: Commit files
         run: |
