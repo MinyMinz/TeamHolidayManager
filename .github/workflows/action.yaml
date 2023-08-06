@@ -12,10 +12,6 @@ on:
     - branch: main
       cron: '0 0 * * *' # Run every day at 00:00 UTC
   workflow_dispatch:
-    env:
-      BRANCH: main
-    types:
-      - manual
 
 jobs:
   build:
