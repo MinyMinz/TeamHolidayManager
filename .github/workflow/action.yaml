@@ -1,0 +1,46 @@
+# github action.yml
+name: 'TeamHolidayManager'
+description: 'This is a workflow to manage team holidays'
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '* */6 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout the repository
+        uses: actions/checkout@v2 # Checkout the repository to github runner
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9.13' #Install exact python version
+
+      - name: Install python packages #Install all dependencies used
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      - name: Run the py script
+        run: |
+          python main.py
+
+      - name: Commit files
+        run: |
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add .
+          git commit -m "Update holidays"
+          git push
+
+      - name: push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
+```
