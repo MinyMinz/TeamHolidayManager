@@ -2,7 +2,6 @@
 name: 'TeamHolidayManager'
 
 on:
-  workflow_dispatch
   push:
     branches:
       - main
@@ -12,7 +11,7 @@ on:
   schedule:
     - branch: main
       cron: '0 0 * * *' # Run every day at 00:00 UTC
-
+      
 jobs:
   build:
     if_merged:
