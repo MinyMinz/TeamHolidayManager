@@ -7,6 +7,7 @@ on:
       - main
   pull_request:
     types:
+      - merged
       - closed
   schedule:
     - branch: main
@@ -15,8 +16,6 @@ on:
 
 jobs:
   build:
-    if_merged:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
 
