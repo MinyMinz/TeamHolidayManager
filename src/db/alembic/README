@@ -1,3 +1,17 @@
 Generic single-database configuration.
 
 This is also used to auto-generate migration scripts populating database with tables based on models.
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+You can run this locally by installing docker
+using docker-compose up to set up Postgres DB
+
+you can then use the commands below:
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+To run the latest alembic migration scripts
+
+alembic upgrade head
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+To run the specific alembic migration scripts
+
+alembic upgrade firstFewCharactersInScriptName or specify the whole file name (excluding the extention)
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
