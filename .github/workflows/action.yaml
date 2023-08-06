@@ -3,14 +3,17 @@ name: 'TeamHolidayManager'
 description: 'This is a workflow to manage team holidays'
 
 on:
-  workflow_dispatch
-  on: [push, pull_request]
+  pull_request:
+    types:
+      - closed
   schedule:
     - branch: main
       cron: '0 0 * * *' # Run every day at 00:00 UTC
 
 jobs:
   build:
+    if_merged:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
 
