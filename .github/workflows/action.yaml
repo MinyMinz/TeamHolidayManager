@@ -2,17 +2,17 @@
 name: 'TeamHolidayManager'
 
 on:
-  workflow_dispatch:
-    push:
-      branches:
-        - main
-    pull_request:
-      types:
-        - merged
-        - closed
-    schedule:
-      - branch: main
-        cron: '0 0 * * *' # Run every day at 00:00 UTC
+  workflow_dispatch
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - merged
+      - closed
+  schedule:
+    - branch: main
+      cron: '0 0 * * *' # Run every day at 00:00 UTC
 
 jobs:
   build:
