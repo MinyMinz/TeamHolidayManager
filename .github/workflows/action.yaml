@@ -3,10 +3,11 @@ name: 'TeamHolidayManager'
 description: 'This is a workflow to manage team holidays'
 
 on:
-  push:
-    branches: [ main ]
+  workflow_dispatch
+  on: [push, pull_request]
   schedule:
-    - cron: '* */6 * * *'
+    - branch: main
+      cron: '0 0 * * *' # Run every day at 00:00 UTC
 
 jobs:
   build:
@@ -43,4 +44,3 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: main
-```
