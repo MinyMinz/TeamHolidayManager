@@ -1,6 +1,5 @@
 # github action.yml
 name: 'TeamHolidayManager'
-description: 'This is a workflow to manage team holidays'
 
 on:
   pull_request:
