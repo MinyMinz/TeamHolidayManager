@@ -2,8 +2,7 @@ import datetime as dt
 from typing import Union
 from pydantic import BaseModel
 
-class holidayRequests(BaseModel):
-    id: int
+class HolidayRequests(BaseModel):
     team_id: int
     user_id: int
     description: Union[str, None] = None

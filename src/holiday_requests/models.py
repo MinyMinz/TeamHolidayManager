@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 class HolidayRequests(Base):
     __tablename__ = "HolidayRequests"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     team_id = Column(Integer, ForeignKey("Teams.id"))
     user_id = Column(Integer, ForeignKey("Users.id"))
     description = Column(String)
@@ -15,14 +15,6 @@ class HolidayRequests(Base):
     
     teamFK = relationship("Teams", foreign_keys=[team_id])  # Use string "Teams"
     userFK = relationship("Users", foreign_keys=[user_id])  # Use string "Users"
-
-    def to_json(self):
-        return {
-            "id": self.id,
-            "team_id": self.team_id,
-            "user_id": self.user_id,
-            "description": self.description,
-            "start_date": self.start_date,
-            "end_date": self.end_date,
-            "morning_or_afternoon": self.morning_or_afternoon
-        }
+    
+    def initialiseInstance(cls):
+        return super().__init__(cls)      
