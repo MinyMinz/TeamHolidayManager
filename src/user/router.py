@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException
 userRouter = APIRouter()
 
 # User Routes
-@userRouter.get("/users")
+@userRouter.get("")
 def fetch_all_users():
     try:
         db_users = crud.dbGetAll(models.Users)
@@ -13,7 +13,7 @@ def fetch_all_users():
         raise HTTPException(status_code=404, detail="No users exist")
     return db_users
 
-@userRouter.get("/users/{user_id}")
+@userRouter.get("/{user_id}")
 def fetch_user(user_id: int):
     try:
         db_user = crud.dbGet(models.Users, 'id', user_id)
@@ -21,7 +21,15 @@ def fetch_user(user_id: int):
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
 
-@userRouter.post("/users")
+@userRouter.get("/email/{email}")
+def fetch_user_by_email(email: str):
+    try:
+        db_user = crud.dbGet(models.Users, 'email', email)
+    except Exception:
+        raise HTTPException(status_code=404, detail="User not found")
+    return db_user
+
+@userRouter.post("")
 def create_user(user: schema.Users):
     try:
         db_user = crud.dbCreate(models.Users, dict(user))
@@ -29,7 +37,7 @@ def create_user(user: schema.Users):
         raise HTTPException(status_code=400, detail="User could not be created")
     return db_user
 
-@userRouter.put("/users")
+@userRouter.put("")
 def update_user(user: schema.Users):
     try:
         db_user = crud.dbUpdate(models.Users, user)
@@ -37,34 +45,10 @@ def update_user(user: schema.Users):
         raise HTTPException(status_code=400, detail="User could not be updated")
     return db_user
 
-@userRouter.delete("/users/{user_id}")
+@userRouter.delete("/{user_id}")
 def delete_user(user_id: int):
     try:
         crud.dbDelete(models.Users, user_id)
     except Exception:
         raise HTTPException(status_code=400, detail="User could not be deleted")
-
-# Role Routes
-@userRouter.get("/roles")
-def fetch_all_roles():
-    try:
-        db_roles = crud.dbGetAll(models.Roles)
-    except Exception:
-        raise HTTPException(status_code=404, detail="No roles exist")
-    return db_roles
-
-@userRouter.get("/roles/{role_id}")
-def fetch_role(role_id: int):
-    try:
-        db_role = crud.dbGet(models.Roles, 'id', role_id)
-    except Exception:
-        raise HTTPException(status_code=404, detail="Role not found")
-    return db_role
-
-@userRouter.post("/roles")
-def fetch_role(role: schema.Roles):
-    try:
-        crud.dbCreate(models.Roles, dict(role))
-    except Exception:
-        raise HTTPException(status_code=404, detail="Role not found")
-    return role
+    return {"message": "User deleted successfully"}
