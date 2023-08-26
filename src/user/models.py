@@ -12,5 +12,5 @@ class Users(Base):
     team_id = Column(Integer, ForeignKey("Teams.id"))
     role_id =  Column(Integer, ForeignKey("Roles.id"))
 
-    teamFK = relationship("Teams", foreign_keys=[team_id])  # Use string "Teams"
-    roleFK = relationship("Roles", foreign_keys=[role_id])  # Use string "Roles"   
+    teamFK = relationship("Teams")
+    roleFK = relationship("Roles")  

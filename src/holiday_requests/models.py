@@ -13,5 +13,5 @@ class HolidayRequests(Base):
     end_date = Column(Date)
     morning_or_afternoon = Column(Boolean)
     
-    teamFK = relationship("Teams", foreign_keys=[team_id])  # Use string "Teams"
-    userFK = relationship("Users", foreign_keys=[user_id])  # Use string "Users"
+    teamFK = relationship("Teams")
+    userFK = relationship("Users")
