@@ -7,7 +7,6 @@ def dbGet(model:any, columnName: str, value: any):
     dbModel = db.query(model).filter(getattr(model, columnName) == value).first()
     return dbModel
 
-
 def dbGetAll(model:any):
     dbModel = db.query(model).all()
     return dbModel

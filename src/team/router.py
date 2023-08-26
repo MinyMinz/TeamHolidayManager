@@ -1,4 +1,5 @@
-from . import models, schema
+from .models import Teams as TeamsModel
+from .schema import Teams as TeamSchema
 import db.crud as crud
 from fastapi import APIRouter, HTTPException
 
@@ -8,7 +9,7 @@ teamRouter = APIRouter()
 @teamRouter.get("")
 def fetch_all_teams():
     try:
-        teams = crud.dbGetAll(models.Teams)
+        teams = crud.dbGetAll(TeamsModel)
     except Exception:
         raise HTTPException(status_code=404, detail="No teams exist")
     return teams
@@ -16,23 +17,23 @@ def fetch_all_teams():
 @teamRouter.get("/{team_id}")
 def fetch_team(team_id: int):
     try:
-        team = crud.dbGet(models.Teams, 'id', team_id)
+        team = crud.dbGet(TeamsModel, 'id', team_id)
     except Exception:
         raise HTTPException(status_code=404, detail="Team not found")
     return team
 
 @teamRouter.post("")
-def create_team(team: schema.Teams):
+def create_team(team: TeamSchema):
     try:
-        crud.dbCreate(models.Teams, dict(team))
+        crud.dbCreate(TeamsModel, dict(team))
     except Exception:
         raise HTTPException(status_code=400, detail="Team could not be created")
     return team
 
 @teamRouter.put("")
-def update_team(team: schema.Teams):
+def update_team(team: TeamSchema):
     try:
-        response = crud.dbUpdate(models.Teams, team)
+        response = crud.dbUpdate(TeamsModel, team)
     except Exception:
         raise HTTPException(status_code=400, detail="Team could not be updated")
     return response
@@ -40,7 +41,7 @@ def update_team(team: schema.Teams):
 @teamRouter.delete("/{team_id}")
 def delete_team(team_id: int):
     try:
-        crud.dbDelete(models.Teams, team_id)
+        crud.dbDelete(TeamsModel, team_id)
     except Exception:
         raise HTTPException(status_code=400, detail="Team could not be deleted")
     return {"Message": "Team deleted successfully"}

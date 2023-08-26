@@ -7,6 +7,3 @@ class Roles(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False, unique=True)
     description = Column(String(100), nullable=True)
-    
-    def initialiseInstance(cls):
-        return super().__init__(cls)       

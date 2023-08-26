@@ -13,7 +13,4 @@ class Users(Base):
     role_id =  Column(Integer, ForeignKey("Roles.id"))
 
     teamFK = relationship("Teams", foreign_keys=[team_id])  # Use string "Teams"
-    roleFK = relationship("Roles", foreign_keys=[role_id])  # Use string "Roles"
-    
-    def initialiseInstance(cls):
-       return super().__init__(cls)      
+    roleFK = relationship("Roles", foreign_keys=[role_id])  # Use string "Roles"   

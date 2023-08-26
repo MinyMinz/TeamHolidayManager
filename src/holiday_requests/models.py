@@ -15,6 +15,3 @@ class HolidayRequests(Base):
     
     teamFK = relationship("Teams", foreign_keys=[team_id])  # Use string "Teams"
     userFK = relationship("Users", foreign_keys=[user_id])  # Use string "Users"
-    
-    def initialiseInstance(cls):
-        return super().__init__(cls)      
