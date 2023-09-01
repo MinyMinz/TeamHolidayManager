@@ -1,34 +1,39 @@
+from fastapi import APIRouter, HTTPException
 from .models import Users as UsersModel
 from .schema import Users as UserSchema
+
 import db.crud as crud
-from fastapi import APIRouter, HTTPException
 
 userRouter = APIRouter()
 
-# User Routes
+
 @userRouter.get("")
-def fetch_all_users():
-    try:
-        db_users = crud.dbGetAll(UsersModel)
-    except Exception:
-        raise HTTPException(status_code=404, detail="No users exist")
-    return db_users
+def fetch_user(user_id: int = None, email: str = None, team: str = None):
+    # If no query parameters are passed, return all users
+    if user_id is None and email is None and team is None:
+        try:
+            return crud.dbGetAllRecords(UsersModel)
+        except Exception:
+            raise HTTPException(status_code=404, detail="No users exist")
+    else:
+        # If query parameters are passed, return the user(s) that match the query
+        if user_id is not None:
+            try:
+                return crud.dbGetOneRecordByColumnName(UsersModel, "id", user_id)
+            except Exception:
+                raise HTTPException(status_code=404, detail="User not found")
+        elif email is not None:
+            try:
+                return crud.dbGetOneRecordByColumnName(UsersModel, "email", email)
+            except Exception:
+                raise HTTPException(status_code=404, detail="User not found")
+        elif team is not None:
+            try:
+                return crud.dbGetAllRecordsByColumnName(UsersModel, "team_name", team)
+            except Exception:
+                raise HTTPException(status_code=404, detail="User not found")
+    raise HTTPException(status_code=404, detail="Invalid query parameters")
 
-@userRouter.get("/{user_id}")
-def fetch_user(user_id: int):
-    try:
-        db_user = crud.dbGet(UsersModel, 'id', user_id)
-    except Exception:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
-
-@userRouter.get("/email/{email}")
-def fetch_user_by_email(email: str):
-    try:
-        db_user = crud.dbGet(UsersModel, 'email', email)
-    except Exception:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
 
 @userRouter.post("")
 def create_user(user: UserSchema):
@@ -38,13 +43,15 @@ def create_user(user: UserSchema):
         raise HTTPException(status_code=400, detail="User could not be created")
     return db_user
 
+
 @userRouter.put("")
 def update_user(user: UserSchema):
     try:
-        db_user = crud.dbUpdate(UsersModel, user)
+        crud.dbUpdate(UsersModel, "id", dict(user))
     except Exception:
         raise HTTPException(status_code=400, detail="User could not be updated")
-    return db_user
+    return user
+
 
 @userRouter.delete("/{user_id}")
 def delete_user(user_id: int):

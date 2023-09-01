@@ -2,32 +2,46 @@ from db.database import SessionLocal
 
 db = SessionLocal()
 
+
 # Read Operations
-def dbGet(model:any, columnName: str, value: any):
-    dbModel = db.query(model).filter(getattr(model, columnName) == value).first()
-    return dbModel
+def dbGetOneRecordByColumnName(model: any, columnName: str, value: any):
+    return (
+        db.query(*model.__table__.columns)
+        .filter(getattr(model, columnName) == value)
+        .first()
+    )
 
-def dbGetAll(model:any):
-    dbModel = db.query(model).all()
-    return dbModel
 
-# Create Operation
-def dbCreate(model:any, data: dict):
-    dbModel = model(**data)
-    db.add(dbModel)
+def dbGetAllRecords(model: any):
+    # get all the results from the query and return it
+    result = db.query(*model.__table__.columns).all()
+    return result
+
+
+def dbGetAllRecordsByColumnName(model: any, columnName: str, value: any):
+    # get all the results from the query and return it
+    return (
+        db.query(*model.__table__.columns)
+        .filter(getattr(model, columnName) == value)
+        .all()
+    )
+
+
+# Create Operations
+def dbCreate(model: any, data: dict):
+    result = model(**data)
+    db.add(result)
     db.commit()
-    return dbModel
+    return result
+
 
 # Update Operation
-def dbUpdate(model:any, data: dict):
-    dbModel = db.query(model).filter(model.id == data['id']).first()
-    dbModel = model(**data)
+def dbUpdate(model: any, columnName: str, data: dict):
+    db.query(model).filter(getattr(model, columnName) == data[columnName]).update(data)
     db.commit()
-    return dbModel
 
-# Delete Operation
-def dbDelete(model:any, id: int):
-    dbModel = db.query(model).filter(model.id == id).first()
-    db.delete(dbModel)
+
+# Delete Operations
+def dbDelete(model: any, id: any):
+    db.query(model).filter(model.id == id).delete()
     db.commit()
-    

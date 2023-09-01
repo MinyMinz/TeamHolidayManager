@@ -1,26 +1,9 @@
-from typing import Union
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
-class Roles(BaseModel):
-    name: str
-    description: str
-
-    class Config:
-        orm_mode = True
 
 class Teams(BaseModel):
-    name: str
+    name: str = Field(...)
     description: str
 
     class Config:
-        orm_mode = True
-
-class Users(BaseModel):
-    email: str
-    password: str
-    full_name: str
-    role_id: int
-    team_id: int
-    
-    class Config:
-        orm_mode = True
+        from_attributes = True
