@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 
 class Roles(BaseModel):
@@ -9,7 +9,8 @@ class Roles(BaseModel):
     class Config:
         from_attributes = True
 
-    def __init__(self, name: str):
-        if not all([name]):
+    @field_validator('name')
+    def name_must_not_be_empty(cls, v):
+        if not v:
             raise ValueError("Name cannot be empty")
-        self.name = name
+        return v

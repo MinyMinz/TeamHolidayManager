@@ -11,7 +11,7 @@ holidayRouter = APIRouter()
 @holidayRouter.get("/all")
 def fetch_all_holiday_requests():
     """Fetch all holiday requests"""
-    return crud.dbGetAllRecords(holidayModel)
+    return crud.getAllRecords(holidayModel)
 
 
 # Get all holiday requests for a specific user or team
@@ -24,23 +24,23 @@ def fetch_holiday_requests_by_user_or_team_name(
         user_id (int): The id of the user to fetch holiday requests for
         team_name (str): The name of the team to fetch holiday requests for"""
     if user_id is not None:
-        return crud.dbGetAllRecordsByColumnName(holidayModel, "user_id", user_id)
+        return crud.getAllRecordsByColumnName(holidayModel, "user_id", user_id)
     elif team_name is not None:
-        return crud.dbGetAllRecordsByColumnName(holidayModel, "team_name", team_name)
+        return crud.getAllRecordsByColumnName(holidayModel, "team_name", team_name)
 
 
 @holidayRouter.post("")
 def create_holiday_request(holiday_request: holidaySchema):
     """Create a new holiday request"""
-    crud.dbCreate(holidayModel, dict(holiday_request))
+    crud.create(holidayModel, dict(holiday_request))
     return status.HTTP_201_CREATED
 
 
 @holidayRouter.put("")
 def update_holiday_request(holiday_request: holidaySchema):
     """Update an existing holiday request"""
-    crud.dbGetOneRecordByColumnName(holidayModel, "id", holidaySchema.id)
-    crud.dbUpdate(holidayModel, "id", dict(holiday_request))
+    crud.getOneRecordByColumnName(holidayModel, "id", holidaySchema.id)
+    crud.update(holidayModel, "id", dict(holiday_request))
     return status.HTTP_202_ACCEPTED
 
 
@@ -49,5 +49,5 @@ def delete_holiday_request(holiday_id: int):
     """Delete an existing holiday request
     \n Args:
         holiday_id (int): The id of the holiday request to delete"""
-    crud.dbDelete(holidayModel, holiday_id)
+    crud.delete(holidayModel, holiday_id)
     return status.HTTP_202_ACCEPTED

@@ -6,17 +6,17 @@ from fastapi import APIRouter, HTTPException, status
 roleRouter = APIRouter()
 
 
-@roleRouter.get("")
+@roleRouter.get("", status_code=status.HTTP_200_OK)
 def fetch_role(role_name: str = None):
     """Fetch a role by name or all roles
     \n Args:
         Optional role_name (str): The name of the role to fetch"""
     if role_name is not None:
-        return crud.dbGetOneRecordByColumnName(RolesModel, "name", role_name)
-    return crud.dbGetAllRecords(RolesModel)
+        return crud.getOneRecordByColumnName(RolesModel, "name", role_name)
+    return crud.getAllRecords(RolesModel)
 
-@roleRouter.post("")
+@roleRouter.post("", status_code=status.HTTP_201_CREATED)
 def fetch_role(role: RoleSchema):
     """Create a new role"""
-    crud.dbCreate(RolesModel, dict(role))
+    crud.create(RolesModel, dict(role))
     raise HTTPException(status.HTTP_201_CREATED)

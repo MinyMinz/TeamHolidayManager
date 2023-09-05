@@ -1,9 +1,10 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from typing import Optional
 
 
 class Users(BaseModel):
     """User Schema"""
+
     id: Optional[int]
     email: str
     password: str
@@ -13,20 +14,17 @@ class Users(BaseModel):
 
     class Config:
         from_attributes = True
-    
-    def __init__(self, email: str, password: str, full_name: str, team_name: str, role_name: str, id: Optional[int] = None):
-        if not all([email, password, full_name, team_name, role_name]):
+
+    @field_validator("email", "password", "full_name", "team_name", "role_name")
+    def fields_must_not_be_empty(cls, v):
+        if not v:
             raise ValueError("All fields must be non-empty strings")
-        self.id = id
-        self.email = email
-        self.password = password
-        self.full_name = full_name
-        self.team_name = team_name
-        self.role_name = role_name
+        return v
 
 
 class Auth(BaseModel):
     """Auth Schema"""
+
     email: str
     password: str
 

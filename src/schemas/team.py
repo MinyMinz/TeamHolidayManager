@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, field_validator
 
 
 class Teams(BaseModel):
@@ -9,7 +9,8 @@ class Teams(BaseModel):
     class Config:
         from_attributes = True
 
-    def __init__(self, name: str):
-        if not all([name]):
+    @field_validator('name')
+    def name_must_not_be_empty(cls, v):
+        if not v:
             raise ValueError("Name cannot be empty")
-        self.name = name
+        return v
