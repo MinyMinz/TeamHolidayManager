@@ -1,9 +1,10 @@
 from db.database import Base
-from sqlalchemy import ForeignKey, String, Integer, Boolean, Column, Date
+from sqlalchemy import ForeignKey, String, Integer, Column, Date
 from sqlalchemy.orm import relationship
 
 
 class HolidayRequests(Base):
+    """Holiday Request Model"""
     __tablename__ = "HolidayRequests"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -12,7 +13,7 @@ class HolidayRequests(Base):
     end_date = Column(Date)
     morning_or_afternoon = Column(String(2), nullable=True)
     user_id = Column(Integer, ForeignKey("Users.id"))
-    team_name = Column(Integer, ForeignKey("Teams.name"))
+    team_name = Column(String, ForeignKey("Teams.name"))
 
     teamFK = relationship("Teams")
     userFK = relationship("Users")

@@ -26,10 +26,10 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 from db.database import Base
-from user.models import Users
-from holiday_requests.models import HolidayRequests
-from team.models import Teams
-from role.models import Roles
+from models.user import Users
+from models.holidayRequests import HolidayRequests
+from models.team import Teams
+from models.role import Roles
 
 target_metadata = Base.metadata
 

@@ -8,5 +8,12 @@
             "cwd": "${workspaceFolder}\\src",
             "args":["main:app","--reload"],
         }, 
+        {
+            "name":"Python Testing",
+            "type":"python",
+            "request":"launch",
+            "module": "tests.${fileBasenameNoExtension}",
+            "cwd": "${workspaceFolder}\\src"
+        }, 
     ]
 }

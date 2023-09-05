@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from user.router import userRouter
-from holiday_requests.router import holidayRouter
-from team.router import teamRouter
-from role.router import roleRouter
+from routes.user import userRouter
+from routes.holidayRequests import holidayRouter
+from routes.team import teamRouter
+from routes.role import roleRouter
 
 app = FastAPI(title="Phoebus Software Shared Calendar API")
 
