@@ -1,4 +1,3 @@
-# from fastapi import HTTPException, status
 from typing import Optional
 from pydantic import BaseModel, FieldValidationInfo, field_validator
 from datetime import date
@@ -18,68 +17,40 @@ class HolidayRequests(BaseModel):
     class Config:
         from_attributes = True
 
-    @field_validator("start_date", "end_date", "team_name", "user_id")
-    def validate_fields(cls, v, field):
-        if not v:
-            raise ValueError(f"{field.name} must not be empty")
-        if field.name in ["start_date", "end_date"]:
+    @field_validator("team_name")
+    def validate_fields(cls, value, info: FieldValidationInfo):
+        if not value:
+            raise ValueError(f"{info.field_name} cannot be empty")
+        return value
+
+    @field_validator("start_date", "end_date")
+    def validate_dates(cls, value, info: FieldValidationInfo):
+        """Validate that start_date is before end_date"""
+        # Define the threshold date based on epoch date 01/01/1970
+        threshold_date = date(1970, 1, 1)
+
+        # Check if the input date is after the threshold date
+        if info.field_name in ["start_date", "end_date"]:
             threshold_date = date(1970, 1, 1)
-            if v < threshold_date:
-                raise ValueError(f"{field.name} must be after {threshold_date}")
-        return v
+            if value < threshold_date:
+                raise ValueError(f"{info.field_name} must be after {threshold_date}")
+        return value
 
     @field_validator("morning_or_afternoon")
-    def validate_morning_or_afternoon(cls, v, info: FieldValidationInfo):
+    def validate_morning_or_afternoon(cls, value, info: FieldValidationInfo):
         """Validate that morning_or_afternoon is either "AM" or "PM" when start_date and end_date are equal"""
         start_date = info.data.get("start_date")
         end_date = info.data.get("end_date")
         if start_date == end_date:
-            if v is None:
+            if value is None:
                 raise ValueError(
-                    "morning_or_afternoon is required when start_date and end_date are equal"
+                    "Field is required when start_date and end_date are the same"
                 )
-            if v not in ["AM", "PM"]:
-                raise ValueError(
-                    'morning_or_afternoon must be either "AM" or "PM" when start_date and end_date are equal'
-                )
+            if value not in ["AM", "PM"]:
+                raise ValueError("morning_or_afternoon must be either 'AM' or 'PM'.")
         else:
-            if v is not None:
+            if value is not None:
                 raise ValueError(
-                    "morning_or_afternoon must be null when start_date and end_date are not equal"
+                    "Field must be null when start_date and end_date are not the same"
                 )
-        return v
-    
-#TODO: Remove this code once the above code is working
-#deprecated
-    # @field_validator('start_date', 'end_date')
-    # def validate_dates(cls, v):
-    #     """Validate that start_date is before end_date"""
-    #     # Define the threshold date based on epoch date 01/01/1970
-    #     threshold_date = date(1970, 1, 1)
-
-    #     # Check if the input date is after the threshold date
-    #     if v >= threshold_date:
-    #         return v
-    #     else:
-    #         raise ValueError(f"Date {v} must be after {threshold_date}")
-
-    # @field_validator("morning_or_afternoon")
-    # def validate_morning_or_afternoon(cls, v, info: FieldValidationInfo):
-    #     """Validate that morning_or_afternoon is either "AM" or "PM" when start_date and end_date are equal"""
-    #     start_date = info.data.get("start_date")
-    #     end_date = info.data.get("end_date")
-    #     if start_date == end_date:
-    #         if v is None:
-    #             raise ValueError(
-    #                 "morning_or_afternoon is required when start_date and end_date are equal"
-    #             )
-    #         if v not in ["AM", "PM"]:
-    #             raise ValueError(
-    #                 'morning_or_afternoon must be either "AM" or "PM" when start_date and end_date are equal'
-    #             )
-    #     else:
-    #         if v is not None:
-    #             raise ValueError(
-    #                 "morning_or_afternoon must be null when start_date and end_date are not equal"
-    #             )
-    #     return v
+        return value

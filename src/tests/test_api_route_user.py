@@ -1,9 +1,11 @@
-import unittest
+from ddt import ddt, data, unpack
 from unittest.mock import patch
 from fastapi.testclient import TestClient
 from main import app
 from unittest import TestCase
 from fastapi import HTTPException, status
+
+import unittest
 
 
 class Test_Api_User(TestCase):
@@ -30,7 +32,7 @@ class Test_Api_User(TestCase):
             "role_name": "test_role",
         }
 
-         # call the API endpoint
+        # call the API endpoint
         response = self.client.post(
             "/users/login", json={"email": "test_email", "password": "test_password"}
         )
@@ -43,7 +45,7 @@ class Test_Api_User(TestCase):
             status_code=status.HTTP_404_NOT_FOUND, detail="No records found"
         )
 
-         # call the API endpoint
+        # call the API endpoint
         response = self.client.post(
             "/users/login",
             json={"email": "test_email", "password": "test_password"},
@@ -73,7 +75,7 @@ class Test_Api_User(TestCase):
             },
         ]
 
-         # call the API endpoint
+        # call the API endpoint
         response = self.client.get(
             "/users",
         )
@@ -108,7 +110,7 @@ class Test_Api_User(TestCase):
             "role_name": "test_role",
         }
 
-         # call the API endpoint
+        # call the API endpoint
         response = self.client.get(
             "/users?user_id=1",
         )
@@ -142,7 +144,7 @@ class Test_Api_User(TestCase):
             "role_name": "test_role",
         }
 
-         # call the API endpoint
+        # call the API endpoint
         response = self.client.get(
             "/users?email=test_email",
         )
@@ -205,7 +207,6 @@ class Test_Api_User(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    #TODO: Fix this test
     # Create user route tests
     @patch("db.crud.create")
     def test_create_user_sucessful(self, mock_return):
@@ -215,6 +216,7 @@ class Test_Api_User(TestCase):
         response = self.client.post(
             "/users",
             json={
+                "id": None,
                 "email": "test_email",
                 "password": "test_password",
                 "full_name": "full_name",
@@ -225,10 +227,21 @@ class Test_Api_User(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     # Update user route tests
+    @patch("db.crud.getOneRecordByColumnName")
     @patch("db.crud.update")
-    def test_update_user_sucessful(self, mock_return):
+    def test_update_user_sucessful(self, mock_get, mock_update):
+        # Mock the return value of the getOneRecordByColumnName function
+        mock_get.return_value = {
+            "id": 1,
+            "email": "test_email",
+            "password": "test_password",
+            "full_name": "full_name",
+            "team_name": "test_team",
+            "role_name": "test_role",
+        }
+
         # Mock the return value of the update function
-        mock_return.return_value = None
+        mock_update.return_value = None
 
         response = self.client.put(
             "/users",
@@ -253,6 +266,79 @@ class Test_Api_User(TestCase):
             "/users?user_id=1",
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+@ddt
+class Test_User_Valdiators(TestCase):
+    """
+    The following tests are for the User Validator
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """Setup the test environment once before all tests"""
+        cls.client = TestClient(app)
+        pass
+
+    @data(
+        ("email", "test_email"),
+        ("password", "test_password"),
+        ("full_name", "test_name"),
+        ("team_name", "test_team"),
+        ("role_name", "test_role"),
+    )
+    @unpack
+    def test_user_validator_empty_fields_on_create(self, field_name, field_value):
+        """Parameterized test for user validator based on user.py Schema"""
+
+        # test user validator based on user.py Schema
+        response = self.client.post(
+            "/users",
+            json={
+                "id": None,
+                field_name: None,
+                "email": field_value if field_name != "email" else "",
+                "password": field_value if field_name != "password" else "",
+                "full_name": field_value if field_name != "full_name" else "",
+                "team_name": field_value if field_name != "team_name" else "",
+                "role_name": field_value if field_name != "role_name" else "",
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
+        self.assertEqual(
+            response.json()["detail"][0]["msg"],
+            f"Value error, {field_name} cannot be empty",
+        )
+
+    @data(
+        ("email", "test_email"),
+        ("password", "test_password"),
+        ("full_name", "test_name"),
+        ("team_name", "test_team"),
+        ("role_name", "test_role"),
+    )
+    @unpack
+    def test_user_validator_empty_fields_on_update(self, field_name, field_value):
+        """Parameterized test for user validator based on user.py Schema"""
+
+        # test user validator based on user.py Schema
+        response = self.client.put(
+            "/users",
+            json={
+                "id": 1,
+                field_name: None,
+                "email": field_value if field_name != "email" else "",
+                "password": field_value if field_name != "password" else "",
+                "full_name": field_value if field_name != "full_name" else "",
+                "team_name": field_value if field_name != "team_name" else "",
+                "role_name": field_value if field_name != "role_name" else "",
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
+        self.assertEqual(
+            response.json()["detail"][0]["msg"],
+            f"Value error, {field_name} cannot be empty",
+        )
 
 
 if __name__ == "__main__":

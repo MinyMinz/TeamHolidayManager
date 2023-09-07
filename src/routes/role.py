@@ -19,4 +19,3 @@ def fetch_role(role_name: str = None):
 def fetch_role(role: RoleSchema):
     """Create a new role"""
     crud.create(RolesModel, dict(role))
-    raise HTTPException(status.HTTP_201_CREATED)

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, FieldValidationInfo, field_validator
 from typing import Optional
 
 
@@ -16,9 +16,9 @@ class Users(BaseModel):
         from_attributes = True
 
     @field_validator("email", "password", "full_name", "team_name", "role_name")
-    def fields_must_not_be_empty(cls, v):
+    def fields_must_not_be_empty(cls, v, info: FieldValidationInfo):
         if not v:
-            raise ValueError("All fields must be non-empty strings")
+            raise ValueError(f"{info.field_name} cannot be empty")
         return v
 
 

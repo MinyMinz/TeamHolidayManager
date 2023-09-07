@@ -51,6 +51,7 @@ def create_user(user: UserSchema):
 @userRouter.put("", status_code=status.HTTP_200_OK)
 def update_user(user: UserSchema):
     """Update an existing user"""
+    crud.getOneRecordByColumnName(UsersModel, "id", user.id)
     crud.update(UsersModel, "id", dict(user))
 
 
