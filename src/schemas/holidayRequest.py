@@ -13,6 +13,7 @@ class HolidayRequests(BaseModel):
     morning_or_afternoon: Optional[str] = None
     team_name: str
     user_id: int
+    approved: Optional[bool] = None
 
     class Config:
         from_attributes = True

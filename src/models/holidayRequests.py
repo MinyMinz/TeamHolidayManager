@@ -1,5 +1,5 @@
 from db.database import Base
-from sqlalchemy import ForeignKey, String, Integer, Column, Date
+from sqlalchemy import ForeignKey, String, Integer, Column, Date, Boolean
 from sqlalchemy.orm import relationship
 
 
@@ -14,15 +14,7 @@ class HolidayRequests(Base):
     morning_or_afternoon = Column(String(2), nullable=True)
     user_id = Column(Integer, ForeignKey("Users.id"))
     team_name = Column(String, ForeignKey("Teams.name"))
+    approved = Column(Boolean, unique=False, default=False)
 
     teamFK = relationship("Teams")
     userFK = relationship("Users")
-
-    def getAllNonFKFields():
-        return [
-            HolidayRequests.id,
-            HolidayRequests.description,
-            HolidayRequests.start_date,
-            HolidayRequests.end_date,
-            HolidayRequests.morning_or_afternoon,
-        ]

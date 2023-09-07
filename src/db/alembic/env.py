@@ -7,10 +7,10 @@ from sqlalchemy import pool
 
 load_dotenv()
 
-devUrl = os.getenv("DATABASE_URL_DEV")
+dbUrl = os.getenv("DATABASE_URL")
 
 config = context.config
-config.set_main_option("sqlalchemy.url", devUrl)
+config.set_main_option("sqlalchemy.url", dbUrl)
 fileConfig(config.config_file_name)
 
 # exclude_tables = config.get_section("alembic:exclude").get("tables", "").split(",")
@@ -53,7 +53,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url", devUrl)
+    url = config.get_main_option("sqlalchemy.url", dbUrl)
     context.configure(
         url=url,
         target_metadata=target_metadata,

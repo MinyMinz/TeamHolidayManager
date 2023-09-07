@@ -1,8 +1,8 @@
-"""Inital Migration 3
+"""Inital Migration3
 
-Revision ID: 978ebbd641a8
+Revision ID: fc4695d86cd7
 Revises: 
-Create Date: 2023-09-05 20:26:34.236991
+Create Date: 2023-09-07 18:44:45.206961
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '978ebbd641a8'
+revision = 'fc4695d86cd7'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -50,9 +50,38 @@ def upgrade() -> None:
     sa.Column('morning_or_afternoon', sa.String(length=2), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('team_name', sa.String(), nullable=True),
+    sa.Column('approved', sa.Boolean(), nullable=True),
     sa.ForeignKeyConstraint(['team_name'], ['Teams.name'], ),
     sa.ForeignKeyConstraint(['user_id'], ['Users.id'], ),
     sa.PrimaryKeyConstraint('id')
+    )
+
+    # Insert some data (only for testing to be deleted at a later date)
+    op.bulk_insert(
+        sa.table('Roles', sa.column('name'), sa.column('description')),
+        [
+            {'name': 'SuperAdmin', 'description': 'This is a SuperAdmin user'},
+            {'name': 'Admin', 'description': 'This is an Admin user'},
+            {'name': 'User', 'description': 'This is a Standard user'},
+        ],
+    )
+
+    op.bulk_insert(
+        sa.table('Teams', sa.column('name'), sa.column('description')),
+        [
+            {'name': 'Team GG', 'description': 'This is Team GG'},
+            {'name': 'Team Matrix', 'description': 'This is Team Matrix'},
+            {'name': 'Team Mamba', 'description': 'This is Team Mamba'},
+        ],
+    )
+
+    op.bulk_insert(
+        sa.table('Users', sa.column('full_name'), sa.column('email'), sa.column('password'), sa.column('team_name'), sa.column('role_name')),
+        [
+            {'full_name': 'SuperAdmin', 'email': 'super@super.com', 'password': 'super', 'team_name': 'Team GG', 'role_name': 'SuperAdmin'},
+            {'full_name': 'Admin', 'email': 'admin@GG.com', 'password': 'admin', 'team_name': 'Team Matrix', 'role_name': 'Admin'},
+            {'full_name': 'User', 'email': 'normal@gg.com', 'password': '123', 'team_name': 'Team Matrix', 'role_name': 'User'},
+        ]
     )
     # ### end Alembic commands ###
 
