@@ -59,6 +59,7 @@ To create a new migration use the below command. ```docker-compose exec app alem
 To insert data into the database you can add the below code to the migration file.
 Insert data into database add the following to the upgrade function in the migration script
 <br>**You should always check your migration file before running it**
+
     op.bulk_insert(
         sa.table('Roles', sa.column('name'), sa.column('description')),
         [
