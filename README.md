@@ -43,7 +43,7 @@ Run the following commands to create a virtual python enviornment for this proje
 
 # Testing
 
-from the project root directory run the commands ```cd src```
+From the project root directory run the commands ```cd src```
 
 Run tests without coverage ```python -m unittest discover -s tests -p test_*.py```
 
@@ -95,8 +95,7 @@ To run the migration you can use this command. ```docker-compose exec app alembi
 To revert a migration you can use this command. ```docker-compose exec app alembic downgrade -1```
 
 ### Finding the migration file
-from the src go into the db/alembic/versions
-your new migration will be located here. 
+From the src go into the db/alembic/versions your new migration will be located here. 
 
 # SwaggerDocs
 To access the swagger docs you will need to run the project and go to the following url http://localhost:8000/docs
