@@ -16,11 +16,11 @@ def fetch_holiday_requests(user_id: int = None, team_name: str = None):
         user_id (int): The id of the user to fetch holiday requests for
         team_name (str): The name of the team to fetch holiday requests for"""
     if user_id is not None:
-        return crud.getAllRecordsByColumnName(holidayModel, "user_id", user_id)
+        return crud.getAllRecordsByColumnName(holidayModel, "user_id", user_id, "id")
     elif team_name is not None:
-        return crud.getAllRecordsByColumnName(holidayModel, "team_name", team_name)
+        return crud.getAllRecordsByColumnName(holidayModel, "team_name", team_name, "id")
     else:
-        return crud.getAllRecords(holidayModel)
+        return crud.getAllRecords(holidayModel, "id")
 
 
 @holidayRouter.post("", status_code=status.HTTP_201_CREATED)

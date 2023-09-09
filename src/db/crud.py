@@ -23,11 +23,14 @@ def getOneRecordByColumnName(model: any, columnName: str, value: any):
     return result
 
 
-def getAllRecords(model: any):
-    """Get all records from the database based the model
+def getAllRecords(model: any, columnToOrderBy: str = None):
+    """Get all records from the database based the model Order by the column name
     \n :param model: type any"""
     try:
-        result = db.query(*model.__table__.columns).all()
+        query = db.query(*model.__table__.columns)
+        if columnToOrderBy is not None:
+            query = query.order_by(getattr(model, columnToOrderBy))
+        result = query.all()
     except Exception:
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
     checkIfResultIsEmpty(result)
@@ -35,17 +38,23 @@ def getAllRecords(model: any):
 
 
 # get all the results from the query and return it based on the column name and value
-def getAllRecordsByColumnName(model: any, columnName: str, value: any):
+def getAllRecordsByColumnName(
+    model: any,
+    columnName: str,
+    value: any,
+    columnToOrderBy: str = None,
+):
     """Get all records from the database based the model, column name and value
     \n :param model: type any
     \n :param columnName: type str
     \n :param value: type any"""
     try:
-        result = (
-            db.query(*model.__table__.columns)
-            .filter(getattr(model, columnName) == value)
-            .all()
+        query = db.query(*model.__table__.columns).filter(
+            getattr(model, columnName) == value
         )
+        if columnToOrderBy is not None:
+            query = query.order_by(getattr(model, columnToOrderBy))
+        result = query.all()
     except Exception:
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
     checkIfResultIsEmpty(result)
