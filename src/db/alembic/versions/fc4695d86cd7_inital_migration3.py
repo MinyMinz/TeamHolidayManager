@@ -79,7 +79,7 @@ def upgrade() -> None:
         sa.table('Users', sa.column('full_name'), sa.column('email'), sa.column('password'), sa.column('team_name'), sa.column('role_name')),
         [
             {'full_name': 'SuperAdmin', 'email': 'super@super.com', 'password': 'super', 'team_name': 'Team GG', 'role_name': 'SuperAdmin'},
-            {'full_name': 'Admin', 'email': 'admin@GG.com', 'password': 'admin', 'team_name': 'Team Matrix', 'role_name': 'Admin'},
+            {'full_name': 'Admin', 'email': 'admin@gg.com', 'password': 'admin', 'team_name': 'Team Matrix', 'role_name': 'Admin'},
             {'full_name': 'User', 'email': 'normal@gg.com', 'password': '123', 'team_name': 'Team Matrix', 'role_name': 'User'},
         ]
     )
