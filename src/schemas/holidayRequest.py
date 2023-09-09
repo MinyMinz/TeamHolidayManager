@@ -10,7 +10,7 @@ class HolidayRequests(BaseModel):
     description: Optional[str] = None
     start_date: date
     end_date: date
-    morning_or_afternoon: Optional[str] = None
+    time_of_day: Optional[str] = None
     team_name: str
     user_id: int
     approved: Optional[bool] = None
@@ -37,9 +37,9 @@ class HolidayRequests(BaseModel):
                 raise ValueError(f"{info.field_name} must be after {threshold_date}")
         return value
 
-    @field_validator("morning_or_afternoon")
-    def validate_morning_or_afternoon(cls, value, info: FieldValidationInfo):
-        """Validate that morning_or_afternoon is either "AM" or "PM" when start_date and end_date are equal"""
+    @field_validator("time_of_day")
+    def validate_time_of_day(cls, value, info: FieldValidationInfo):
+        """Validate that time_of_day is either "AM" or "PM" when start_date and end_date are equal"""
         start_date = info.data.get("start_date")
         end_date = info.data.get("end_date")
         if start_date == end_date:
@@ -48,7 +48,7 @@ class HolidayRequests(BaseModel):
                     "Field is required when start_date and end_date are the same"
                 )
             if value not in ["AM", "PM"]:
-                raise ValueError("morning_or_afternoon must be either 'AM' or 'PM'.")
+                raise ValueError("time of day must be either 'AM' or 'PM'.")
         else:
             if value is not None:
                 raise ValueError(

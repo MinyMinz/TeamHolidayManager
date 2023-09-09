@@ -11,7 +11,7 @@ class HolidayRequests(Base):
     description = Column(String)
     start_date = Column(Date)
     end_date = Column(Date)
-    morning_or_afternoon = Column(String(2), nullable=True)
+    time_of_day = Column(String(2), nullable=True)
     user_id = Column(Integer, ForeignKey("Users.id"))
     team_name = Column(String, ForeignKey("Teams.name"))
     approved = Column(Boolean, unique=False, default=False)
