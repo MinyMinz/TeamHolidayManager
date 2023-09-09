@@ -47,7 +47,7 @@ From the project root directory run the commands ```cd src```
 
 Run tests without coverage ```python -m unittest discover -s tests -p test_*.py```
 
-# Database migrations (need to verify this can be done via docker)
+# Database migrations (Docker)
 
 To begin run the docker containers.
 
@@ -82,7 +82,7 @@ Insert data into database add the following to the upgrade function in the migra
         sa.table('Users', sa.column('full_name'), sa.column('email'), sa.column('password'), sa.column('team_name'), sa.column('role_name')),
         [
             {'full_name': 'SuperAdmin', 'email': 'super@super.com', 'password': 'super', 'team_name': 'Team GG', 'role_name': 'SuperAdmin'},
-            {'full_name': 'Admin', 'email': 'admin@GG.com', 'password': 'admin', 'team_name': 'Team Matrix', 'role_name': 'Admin'},
+            {'full_name': 'Admin', 'email': 'admin@gg.com', 'password': 'admin', 'team_name': 'Team Matrix', 'role_name': 'Admin'},
             {'full_name': 'User', 'email': 'normal@gg.com', 'password': '123', 'team_name': 'Team Matrix', 'role_name': 'User'},
         ]
     )
@@ -100,3 +100,6 @@ From the src go into the db/alembic/versions your new migration will be located 
 # SwaggerDocs
 To access the swagger docs you will need to run the project and go to the following url http://localhost:8000/docs
 
+## Database Connection via IDE
+To connect to the database via an IDE you will need to uncomment the 2nd database url in the .env file and comment out the first one.
+Else it will try to connect to the docker container
