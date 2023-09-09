@@ -22,7 +22,7 @@ class Test_Api_HolidayRequest(TestCase):
         pass
 
     # Get all holiday-request route tests
-    @patch("db.crud.getAllRecords")
+    @patch("db.crud.getAllHolidayRequests")
     def test_get_all_holiday_request_sucessful(self, mock_return):
         # Mock the return value of the getAllRecords function
         # based on holidayReuqest.py Schema
@@ -32,27 +32,30 @@ class Test_Api_HolidayRequest(TestCase):
                 "description": "test_description",
                 "start_date": "2021-01-01",
                 "end_date": "2021-01-01",
-                "morning_or_afternoon": "AM",
+                "time_of_day": "AM",
                 "team_name": "test_team",
                 "user_id": 1,
+                "full_name": "test_user1",
             },
             {
                 "id": 1,
                 "description": "test_description",
                 "start_date": "2023-01-01",
                 "end_date": "2023-01-31",
-                "morning_or_afternoon": None,
+                "time_of_day": None,
                 "team_name": "test_team",
                 "user_id": 1,
+                "full_name": "test_user1",
             },
             {
                 "id": 2,
                 "description": "test_description",
                 "start_date": "2022-12-31",
                 "end_date": "2022-12-31",
-                "morning_or_afternoon": "PM",
+                "time_of_day": "PM",
                 "team_name": "test_team",
                 "user_id": 2,
+                "full_name": "test_user2",
             },
         ]
 
@@ -65,7 +68,7 @@ class Test_Api_HolidayRequest(TestCase):
         self.assertEqual(response.json()[0]["id"], 1)
         self.assertEqual(response.json()[0]["description"], "test_description")
 
-    @patch("db.crud.getAllRecords")
+    @patch("db.crud.getAllHolidayRequests")
     def test_get_all_holiday_request_where_no_holiday_request_exist(self, mock_return):
         # Mock the return value of the getAllRecords function to return HTTPException 404
         mock_return.side_effect = HTTPException(
@@ -79,7 +82,7 @@ class Test_Api_HolidayRequest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     # Get all holiday-request by team name route tests
-    @patch("db.crud.getAllRecordsByColumnName")
+    @patch("db.crud.getHolidayRequestsByField")
     def test_get_all_holiday_request_by_team_name_sucessful(self, mock_return):
         # Mock the return value of the getAllRecordsByColumnName function
         mock_return.return_value = [
@@ -88,18 +91,20 @@ class Test_Api_HolidayRequest(TestCase):
                 "description": "test_description1",
                 "start_date": "2021-01-01",
                 "end_date": "2021-01-01",
-                "morning_or_afternoon": "AM",
+                "time_of_day": "AM",
                 "team_name": "test_team",
                 "user_id": 1,
+                "full_name": "test_user1",
             },
             {
                 "id": 2,
                 "description": "test_description2",
                 "start_date": "2022-12-31",
                 "end_date": "2022-12-31",
-                "morning_or_afternoon": "PM",
+                "time_of_day": "PM",
                 "team_name": "test_team",
                 "user_id": 1,
+                "full_name": "test_user1",
             },
         ]
 
@@ -113,7 +118,7 @@ class Test_Api_HolidayRequest(TestCase):
         self.assertEqual(response.json()[1]["id"], 2)
         self.assertEqual(response.json()[1]["description"], "test_description2")
 
-    @patch("db.crud.getAllRecordsByColumnName")
+    @patch("db.crud.getHolidayRequestsByField")
     def test_get_all_holiday_request_by_team_name_where_no_holiday_request_exist(
         self, mock_return
     ):
@@ -128,7 +133,7 @@ class Test_Api_HolidayRequest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     # Get all holiday-request by user id route tests
-    @patch("db.crud.getAllRecordsByColumnName")
+    @patch("db.crud.getHolidayRequestsByField")
     def test_get_all_holiday_request_by_user_id_sucessful(self, mock_return):
         # Mock the return value of the getAllRecordsByColumnName function
         mock_return.return_value = [
@@ -137,18 +142,20 @@ class Test_Api_HolidayRequest(TestCase):
                 "description": "test_description1",
                 "start_date": "2021-01-01",
                 "end_date": "2021-01-01",
-                "morning_or_afternoon": "AM",
+                "time_of_day": "AM",
                 "team_name": "test_team",
                 "user_id": 1,
+                "full_name": "test_user1",
             },
             {
                 "id": 2,
                 "description": "test_description2",
                 "start_date": "2022-12-31",
                 "end_date": "2022-12-31",
-                "morning_or_afternoon": "PM",
+                "time_of_day": "PM",
                 "team_name": "test_team",
                 "user_id": 1,
+                "full_name": "test_user1",
             },
         ]
 
@@ -176,7 +183,7 @@ class Test_Api_HolidayRequest(TestCase):
                 "description": "test_description",
                 "start_date": "2021-01-01",
                 "end_date": "2021-01-01",
-                "morning_or_afternoon": "AM",
+                "time_of_day": "AM",
                 "team_name": "test_team",
                 "user_id": 1,
             },
@@ -193,7 +200,7 @@ class Test_Api_HolidayRequest(TestCase):
             "description": "test_description",
             "start_date": "2021-01-01",
             "end_date": "2021-01-01",
-            "morning_or_afternoon": "AM",
+            "time_of_day": "AM",
             "team_name": "test_team",
             "user_id": 1,
         }
@@ -208,7 +215,7 @@ class Test_Api_HolidayRequest(TestCase):
                 "description": "test_description",
                 "start_date": "2021-01-01",
                 "end_date": "2021-01-01",
-                "morning_or_afternoon": "AM",
+                "time_of_day": "AM",
                 "team_name": "test_team",
                 "user_id": 1,
             },
@@ -224,7 +231,7 @@ class Test_Api_HolidayRequest(TestCase):
                 "description": "test_description",
                 "start_date": "2021-01-02",
                 "end_date": "2021-01-01",
-                "morning_or_afternoon": "AM",
+                "time_of_day": "AM",
                 "team_name": "test_team",
                 "user_id": 1,
             },
@@ -241,7 +248,7 @@ class Test_Api_HolidayRequest(TestCase):
             "description": "test_description",
             "start_date": "2021-01-01",
             "end_date": "2021-01-01",
-            "morning_or_afternoon": "AM",
+            "time_of_day": "AM",
             "team_name": "test_team",
             "user_id": 1,
         }
@@ -278,7 +285,7 @@ class Test_HolidayRequest_Valdiators(TestCase):
                 "description": "description",
                 "start_date": "2021-01-01",
                 "end_date": "2021-01-01",
-                "morning_or_afternoon": "AM",
+                "time_of_day": "AM",
                 "team_name": "",
             },
         )
@@ -307,7 +314,7 @@ class Test_HolidayRequest_Valdiators(TestCase):
                 "description": "description",
                 "start_date": field_value if field_name != "start_date" else None,
                 "end_date": "2023-12-12" if field_name != "end_date" else None,
-                "morning_or_afternoon": "AM",
+                "time_of_day": "AM",
                 "team_name": "team_name",
             },
         )
@@ -316,7 +323,7 @@ class Test_HolidayRequest_Valdiators(TestCase):
             response.json()["detail"][0]["msg"], "Input should be a valid date"
         )
 
-    def test_holiday_request_validator_date_fields_are_equal_and_morning_or_afternoon_field_not_set_on_create(
+    def test_holiday_request_validator_date_fields_are_equal_and_time_of_day_field_not_set_on_create(
         self,
     ):
         """Parameterized test for HolidayRequest validator when doing POST request based on HolidayRequest.py Schema"""
@@ -329,7 +336,7 @@ class Test_HolidayRequest_Valdiators(TestCase):
                 "description": "description",
                 "start_date": "2021-01-01",
                 "end_date": "2021-01-01",
-                "morning_or_afternoon": None,
+                "time_of_day": None,
                 "team_name": "team_name",
             },
         )
@@ -339,7 +346,7 @@ class Test_HolidayRequest_Valdiators(TestCase):
             "Value error, Field is required when start_date and end_date are the same",
         )
 
-    def test_holiday_request_validator_date_fields_are_equal_and_morning_or_afternoon_field_invalid_create(
+    def test_holiday_request_validator_date_fields_are_equal_and_time_of_day_field_invalid_create(
         self,
     ):
         """Parameterized test for HolidayRequest validator when doing POST request based on HolidayRequest.py Schema"""
@@ -352,14 +359,14 @@ class Test_HolidayRequest_Valdiators(TestCase):
                 "description": "description",
                 "start_date": "2021-01-01",
                 "end_date": "2021-01-01",
-                "morning_or_afternoon": "AB",
+                "time_of_day": "AB",
                 "team_name": "team_name",
             },
         )
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertEqual(
             response.json()["detail"][0]["msg"],
-            "Value error, morning_or_afternoon must be either 'AM' or 'PM'.",
+            "Value error, time of day must be either 'AM' or 'PM'.",
         )
 
 

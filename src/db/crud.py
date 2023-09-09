@@ -18,6 +18,7 @@ def getOneRecordByColumnName(model: any, columnName: str, value: any):
             .first()
         )
     except Exception:
+        db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
     checkIfResultIsEmpty(result)
     return result
@@ -32,6 +33,7 @@ def getAllRecords(model: any, columnToOrderBy: str = None):
             query = query.order_by(getattr(model, columnToOrderBy))
         result = query.all()
     except Exception:
+        db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
     checkIfResultIsEmpty(result)
     return result
@@ -56,6 +58,7 @@ def getAllRecordsByColumnName(
             query = query.order_by(getattr(model, columnToOrderBy))
         result = query.all()
     except Exception:
+        db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
     checkIfResultIsEmpty(result)
     return result
@@ -72,6 +75,7 @@ def create(model: any, data: dict):
         db.commit()
     except Exception as e:
         print(e)
+        db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
 
 
@@ -87,6 +91,7 @@ def update(model: any, columnName: str, data: dict):
         )
         db.commit()
     except Exception:
+        db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
 
 
@@ -99,6 +104,7 @@ def delete(model: any, uid: any):
         db.query(model).filter(model.id == uid).delete()
         db.commit()
     except Exception:
+        db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
 
 
@@ -109,3 +115,44 @@ def checkIfResultIsEmpty(result: any):
     \n :param result: type any"""
     if not result or len(result) == 0:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "No records found")
+
+
+# holidayRequest Specific
+from models.holidayRequests import HolidayRequests as holidayModel
+from models.user import Users as userModel
+
+
+# get all holiday requests for a specific user or team and return full name with user id
+def getHolidayRequestsByField(columnName: str, value: any, columnToOrderBy: str = None):
+    try:
+        fields = [*holidayModel.__table__.columns, getattr(userModel, "full_name")]
+        query = (
+            db.query(*fields)
+            .filter(getattr(holidayModel, columnName) == value)
+            .join(userModel, isouter=True)
+        )
+        if columnToOrderBy is not None:
+            query = query.order_by(getattr(holidayModel, columnToOrderBy))
+        result = query.all()
+    except Exception as e:
+        print(e)
+        db.rollback()
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
+    checkIfResultIsEmpty(result)
+    return result
+
+
+# get all holiday requests return full name with user id
+def getAllHolidayRequests(columnToOrderBy: str = None):
+    try:
+        fields = [*holidayModel.__table__.columns, getattr(userModel, "full_name")]
+        query = db.query(*fields).join(userModel, isouter=True)
+        if columnToOrderBy is not None:
+            query = query.order_by(getattr(holidayModel, columnToOrderBy))
+        result = query.all()
+    except Exception as e:
+        print(e)
+        db.rollback()
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
+    checkIfResultIsEmpty(result)
+    return result
