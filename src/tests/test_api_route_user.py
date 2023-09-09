@@ -209,9 +209,13 @@ class Test_Api_User(TestCase):
 
     # Create user route tests
     @patch("db.crud.create")
-    def test_create_user_sucessful(self, mock_return):
+    @patch("db.crud.getOneRecordByColumnName")
+    def test_create_user_sucessful(self, mock_get, mock_create):
+        # Mock the return value of the getOneRecordByColumnName function
+        mock_get.return_value = None
+
         # Mock the return value of the create function
-        mock_return.return_value = None
+        mock_create.return_value = None
 
         response = self.client.post(
             "/users",
@@ -258,9 +262,20 @@ class Test_Api_User(TestCase):
 
     # Delete user route tests
     @patch("db.crud.delete")
-    def test_delete_user_sucessful(self, mock_return):
+    @patch("db.crud.getOneRecordByColumnName")
+    def test_delete_user_sucessful(self, mock_get, mock_delete):
+        # Mock the return value of the getOneRecordByColumnName function
+        mock_get.return_value = {
+            "id": 2,
+            "email": "test_email",
+            "password": "test_password",
+            "full_name": "full_name",
+            "team_name": "test_team",
+            "role_name": "SuperAdmin",
+        }
+
         # Mock the return value of the delete function
-        mock_return.return_value = None
+        mock_delete.return_value = None
 
         response = self.client.delete(
             "/users?user_id=1",
