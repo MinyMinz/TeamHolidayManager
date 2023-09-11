@@ -20,6 +20,7 @@ def login_user(login: AuthSchema):
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Incorrect login details",
             )
+        return user
 
 
 @userRouter.get("", status_code=status.HTTP_200_OK)
@@ -73,8 +74,10 @@ def delete_user(user_id: int):
     """Delete an existing user
     \n Args:
     \n    user_id (int): The id of the user to delete"""
-    user: UserSchema = crud.getOneRecordByColumnName(UsersModel, "role_name", "SuperAdmin")
-    if user['id'] == user_id:
+    user: UserSchema = crud.getOneRecordByColumnName(
+        UsersModel, "role_name", "SuperAdmin"
+    )
+    if user["id"] == user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="You cannot delete this user",
