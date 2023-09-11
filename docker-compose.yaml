@@ -15,10 +15,9 @@ services:
       - 5432:5432
 
   # Create FastAPI app
-  app:
+  src:
       container_name: src
       build:
-        context: .\src
         dockerfile: Dockerfile
       command: bash -c "cd /src/db && alembic upgrade head && cd .. && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
       volumes:

@@ -1,4 +1,6 @@
+from os import environ as env
 from fastapi import FastAPI
+from mangum import Mangum
 from fastapi.middleware.cors import CORSMiddleware
 from routes.user import userRouter
 from routes.holidayRequests import holidayRouter
@@ -49,12 +51,19 @@ tags_metadata = [
     {
         "name": "Holiday Requests",
         "description": "Operations with Holiday Requests.",
-    }
+    },
 ]
 
 
+stage = env.get("AWS_STAGE_NAME", None)
+root_path = f"/{stage}" if stage else "/"
 
-app = FastAPI(title="Phoebus Software Shared Calendar API", openapi_tags=tags_metadata, description=description)
+app = FastAPI(
+    title="Phoebus Software Shared Calendar API",
+    openapi_tags=tags_metadata,
+    description=description,
+    root_path=root_path,
+)
 
 # Set up CORS
 origins = ["*"]  # Allow requests from any origin
@@ -72,7 +81,16 @@ app.include_router(teamRouter, prefix="/teams", tags=["Teams"])
 app.include_router(userRouter, prefix="/users", tags=["Users"])
 app.include_router(holidayRouter, prefix="/holiday-request", tags=["Holiday Requests"])
 
-import uvicorn
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="", port=8000)
+@app.get("/")
+async def root():
+    return {"message": "Hello World"}
+
+handler = Mangum(app=app)
+
+
+# LOCAL TESTING
+# import uvicorn
+
+# if __name__ == "__main__":
+#     uvicorn.run(app, host="", port=8000)
