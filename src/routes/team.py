@@ -21,3 +21,16 @@ def fetch_team(team_name: str = None):
 def create_team(team: TeamSchema):
     """Create a new team"""
     crud.create(TeamsModel, dict(team))
+
+
+@teamRouter.put("", status_code=status.HTTP_200_OK)
+def update_team(team: TeamSchema):
+    """Update a team"""
+    crud.update(TeamsModel, dict(team))
+
+
+@teamRouter.delete("", status_code=status.HTTP_200_OK)
+def delete_team(team_name: str):
+    """Delete a team"""
+    crud.delete(TeamsModel, "name", team_name)
+

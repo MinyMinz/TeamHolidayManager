@@ -99,6 +99,32 @@ class Test_Api_Team(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    @patch("db.crud.update")
+    def test_update_team(self, mock_return):
+        # mock the update method to do nothing
+        mock_return.return_value = None
+
+        # call the API endpoint
+        response = self.client.put(
+            "/teams",
+            json={
+                "name": "TestTeam",
+                "description": "Test Team",
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @patch("db.crud.delete")
+    def test_delete_team(self, mock_return):
+        # mock the delete method to do nothing
+        mock_return.return_value = None
+
+        # call the API endpoint
+        response = self.client.delete(
+            "/teams?team_name=TestTeam",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
 
 class Test_Team_Valdiators(TestCase):
     """
