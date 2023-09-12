@@ -42,7 +42,7 @@ To access the swagger docs you can run the project locally and go to the followi
    pip install -r requirements.txt
    ```
 
-## Running the project
+## Running the project locally
 
 ### Running the project with docker
 1. Run the docker containers
@@ -66,3 +66,8 @@ To access the swagger docs you can run the project locally and go to the followi
    ```sh
    uvicorn main:app --reload
    ```
+
+4. Go to the following url to access the swagger docs
+    ```sh
+    http://localhost:8000/docs
+    ```
