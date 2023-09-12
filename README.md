@@ -55,10 +55,20 @@ Run the following commands to create a virtual python enviornment for this proje
 `pip freeze > requirements.txt`
 
 # Testing
-
 From the project root directory run the commands `cd src`
 
-Run tests without coverage `python -m unittest discover -s tests -p test_*.py`
+# Running unit tests
+Run unittests `python -m unittest discover -s tests -p test_*.py`
+
+# Future Work (To be completed) ✨
+
+### Building development container stack ()
+run the command ```docker-compose up```
+
+### Building test container stack
+run the command  ```docker-compose -f docker-compose-test.yml -p test up -d```
+delete test container ```docker-compose -f docker-compose-test.yml -p test down --volumes```
+
 
 # Database migrations (Docker)
 
