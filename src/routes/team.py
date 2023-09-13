@@ -32,5 +32,7 @@ def update_team(team: TeamSchema):
 @teamRouter.delete("", status_code=status.HTTP_200_OK)
 def delete_team(team_name: str):
     """Delete a team"""
-    crud.delete(TeamsModel, "name", team_name)
+    team = crud.getOneRecordByColumnName(TeamsModel, "name", team_name)
+    if(team is not None):
+        crud.delete(TeamsModel, "name", team_name)
 

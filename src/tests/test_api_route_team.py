@@ -114,10 +114,17 @@ class Test_Api_Team(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    @patch("db.crud.getOneRecordByColumnName")
     @patch("db.crud.delete")
-    def test_delete_team(self, mock_return):
+    def test_delete_team(self, mock_get, mock_delete):
+        # mock the getOneRecordByColumnName method to return a Team
+        mock_get.return_value = {
+            "name": "TestTeam",
+            "description": "Test Team",
+        }
+
         # mock the delete method to do nothing
-        mock_return.return_value = None
+        mock_delete.return_value = None
 
         # call the API endpoint
         response = self.client.delete(

@@ -96,12 +96,13 @@ def update(model: any, columnName: str, data: dict):
 
 
 # Delete Operations
-def delete(model: any, uid: any):
+def delete(model: any, columnName: str, uid: any):
     """delete a record in the database based on the model and uid
     \n :param model: type any
+    \n :param columnName: type str
     \n :param uid: type any"""
     try:
-        db.query(model).filter(model.id == uid).delete()
+        db.query(model).filter(getattr(model, columnName) == uid).delete()
         db.commit()
     except Exception:
         db.rollback()

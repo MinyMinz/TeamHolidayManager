@@ -19,6 +19,7 @@ You can:
 You can:
 * **Create Teams**.
 * **Read Teams**.
+* **Delete Teams**.
 
 ## Users
 You can:
