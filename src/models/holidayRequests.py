@@ -5,6 +5,7 @@ from sqlalchemy.orm import relationship
 
 class HolidayRequests(Base):
     """Holiday Request Model"""
+
     __tablename__ = "HolidayRequests"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -14,7 +15,7 @@ class HolidayRequests(Base):
     time_of_day = Column(String(2), nullable=True)
     user_id = Column(Integer, ForeignKey("Users.id"))
     team_name = Column(String, ForeignKey("Teams.name"))
-    approved = Column(Boolean, unique=False, default=False)
+    approved = Column(Boolean, unique=False)
 
     teamFK = relationship("Teams")
     userFK = relationship("Users")

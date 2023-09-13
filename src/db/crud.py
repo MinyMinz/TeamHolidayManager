@@ -70,11 +70,11 @@ def create(model: any, data: dict):
     \n :param model: type any
     \n :param data: type dict"""
     try:
-        mappedModel = model(**data)
-        db.add(mappedModel)
+        db.add(
+            model(**data)
+        )  # model(**data) unpacks the dictionary and maps it to the model
         db.commit()
-    except Exception as e:
-        print(e)
+    except Exception:
         db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
 
@@ -135,8 +135,7 @@ def getHolidayRequestsByField(columnName: str, value: any, columnToOrderBy: str 
         if columnToOrderBy is not None:
             query = query.order_by(getattr(holidayModel, columnToOrderBy))
         result = query.all()
-    except Exception as e:
-        print(e)
+    except Exception:
         db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
     checkIfResultIsEmpty(result)
@@ -151,8 +150,7 @@ def getAllHolidayRequests(columnToOrderBy: str = None):
         if columnToOrderBy is not None:
             query = query.order_by(getattr(holidayModel, columnToOrderBy))
         result = query.all()
-    except Exception as e:
-        print(e)
+    except Exception:
         db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
     checkIfResultIsEmpty(result)
