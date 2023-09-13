@@ -45,13 +45,13 @@ class HolidayRequests(BaseModel):
         if start_date == end_date:
             if value is None:
                 raise ValueError(
-                    "Field is required when start_date and end_date are the same"
+                    "TimeOfDay is required when start_date and end_date are the same"
                 )
             if value not in ["AM", "PM"]:
-                raise ValueError("time of day must be either 'AM' or 'PM'.")
+                raise ValueError("TimeOfDay must be either 'AM' or 'PM'.")
         else:
             if value is not None:
                 raise ValueError(
-                    "Field must be null when start_date and end_date are not the same"
+                    "TimeOfDay must be null when start_date and end_date are not the same"
                 )
         return value

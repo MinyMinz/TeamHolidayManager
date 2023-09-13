@@ -343,7 +343,7 @@ class Test_HolidayRequest_Valdiators(TestCase):
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertEqual(
             response.json()["detail"][0]["msg"],
-            "Value error, Field is required when start_date and end_date are the same",
+            "Value error, TimeOfDay is required when start_date and end_date are the same",
         )
 
     def test_holiday_request_validator_date_fields_are_equal_and_time_of_day_field_invalid_create(
@@ -366,7 +366,7 @@ class Test_HolidayRequest_Valdiators(TestCase):
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertEqual(
             response.json()["detail"][0]["msg"],
-            "Value error, time of day must be either 'AM' or 'PM'.",
+            "Value error, TimeOfDay must be either 'AM' or 'PM'.",
         )
 
 
