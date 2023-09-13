@@ -82,4 +82,4 @@ def delete_user(user_id: int):
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="You cannot delete this user",
         )
-    crud.delete(UsersModel, user_id)
+    crud.delete(UsersModel, "id", user_id)

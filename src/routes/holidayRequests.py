@@ -42,4 +42,4 @@ def delete_holiday_request(holiday_id: int):
     \n Args:
         holiday_id (int): The id of the holiday request to delete"""
     crud.getOneRecordByColumnName(holidayModel, "id", holiday_id)
-    crud.delete(holidayModel, holiday_id)
+    crud.delete(holidayModel, "id", holiday_id)
