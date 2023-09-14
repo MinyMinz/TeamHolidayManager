@@ -1,4 +1,3 @@
-from ddt import ddt, data, unpack
 from unittest.mock import patch
 from fastapi.testclient import TestClient
 from main import app
@@ -262,7 +261,6 @@ class Test_Api_HolidayRequest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-@ddt
 class Test_HolidayRequest_Valdiators(TestCase):
     """
     The following tests are for the HolidayRequest Validator
@@ -295,25 +293,17 @@ class Test_HolidayRequest_Valdiators(TestCase):
             f"Value error, team_name cannot be empty",
         )
 
-    @data(
-        ("start_date", "2021-01-01"),
-        ("end_date", "2023-12-12"),
-    )
-    @unpack
-    def test_holiday_request_validator_empty_date_fields_on_create(
-        self, field_name, field_value
-    ):
-        """Parameterized test for HolidayRequest validator when doing POST request based on HolidayRequest.py Schema"""
+    def test_holiday_request_validator_empty_start_date(self):
+        """Test for HolidayRequest validator based on HolidayRequest.py Schema"""
 
         # test user validator based on user.py Schema
         response = self.client.post(
             "/holiday-request",
             json={
                 "id": None,
-                field_name: None,
                 "description": "description",
-                "start_date": field_value if field_name != "start_date" else None,
-                "end_date": "2023-12-12" if field_name != "end_date" else None,
+                "start_date": None,
+                "end_date": "2021-01-01",
                 "time_of_day": "AM",
                 "team_name": "team_name",
             },
@@ -323,11 +313,27 @@ class Test_HolidayRequest_Valdiators(TestCase):
             response.json()["detail"][0]["msg"], "Input should be a valid date"
         )
 
-    def test_holiday_request_validator_date_fields_are_equal_and_time_of_day_field_not_set_on_create(
+    def test_holiday_request_validator_empty_end_date(self):
+        # test user validator based on user.py Schema
+        response = self.client.post(
+            "/holiday-request",
+            json={
+                "id": None,
+                "description": "description",
+                "start_date": None,
+                "end_date": "2021-01-01",
+                "time_of_day": "AM",
+                "team_name": "team_name",
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
+        self.assertEqual(
+            response.json()["detail"][0]["msg"], "Input should be a valid date"
+        )
+
+    def test_holiday_request_validator_dates_are_equal_and_time_of_day_field_not_set(
         self,
     ):
-        """Parameterized test for HolidayRequest validator when doing POST request based on HolidayRequest.py Schema"""
-
         # test user validator based on user.py Schema
         response = self.client.post(
             "/holiday-request",
@@ -346,7 +352,7 @@ class Test_HolidayRequest_Valdiators(TestCase):
             "Value error, TimeOfDay is required when start_date and end_date are the same",
         )
 
-    def test_holiday_request_validator_date_fields_are_equal_and_time_of_day_field_invalid_create(
+    def test_holiday_request_validator_date_fields_are_equal_and_time_of_day_field_invalid(
         self,
     ):
         """Parameterized test for HolidayRequest validator when doing POST request based on HolidayRequest.py Schema"""

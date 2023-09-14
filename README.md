@@ -29,7 +29,7 @@ To access the swagger docs you can run the project locally and go to the followi
 
 1. Clone the repo
    ```sh
-   git clone
+   git clone https://github.com/MinyMinz/TeamHolidayManager.git
     ```
 2. Install python 3.11.4 or the latest version https://www.python.org/downloads/
 
