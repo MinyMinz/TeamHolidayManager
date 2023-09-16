@@ -4,8 +4,6 @@ from main import app
 from unittest import TestCase
 from fastapi import HTTPException, status
 
-# from datetime import date
-
 import unittest
 
 
@@ -22,7 +20,7 @@ class Test_Api_HolidayRequest(TestCase):
 
     # Get all holiday-request route tests
     @patch("db.crud.getAllHolidayRequests")
-    def test_get_all_holiday_request_sucessful(self, mock_return):
+    def test_get_all_holiday_request_successful(self, mock_return):
         # Mock the return value of the getAllRecords function
         # based on holidayReuqest.py Schema
         mock_return.return_value = [
@@ -82,7 +80,7 @@ class Test_Api_HolidayRequest(TestCase):
 
     # Get all holiday-request by team name route tests
     @patch("db.crud.getHolidayRequestsByField")
-    def test_get_all_holiday_request_by_team_name_sucessful(self, mock_return):
+    def test_get_all_holiday_request_by_team_name_successful(self, mock_return):
         # Mock the return value of the getAllRecordsByColumnName function
         mock_return.return_value = [
             {
@@ -133,7 +131,7 @@ class Test_Api_HolidayRequest(TestCase):
 
     # Get all holiday-request by user id route tests
     @patch("db.crud.getHolidayRequestsByField")
-    def test_get_all_holiday_request_by_user_id_sucessful(self, mock_return):
+    def test_get_all_holiday_request_by_user_id_successful(self, mock_return):
         # Mock the return value of the getAllRecordsByColumnName function
         mock_return.return_value = [
             {
@@ -172,7 +170,7 @@ class Test_Api_HolidayRequest(TestCase):
 
     # Create holidayRequest route tests
     @patch("db.crud.create")
-    def test_create_holidayRequest_sucessful(self, mock_return):
+    def test_create_holidayRequest_successful(self, mock_return):
         # Mock the return value of the create function
         mock_return.return_value = None
 
@@ -192,7 +190,7 @@ class Test_Api_HolidayRequest(TestCase):
     # Update holidayRequest route tests
     @patch("db.crud.getOneRecordByColumnName")
     @patch("db.crud.update")
-    def test_update_holidayRequest_sucessful(self, mock_get, mock_update):
+    def test_update_holidayRequest_successful(self, mock_get, mock_update):
         # Mock the return value of the getOneRecordByColumnName function
         mock_get.return_value = {
             "id": 1,
@@ -240,7 +238,7 @@ class Test_Api_HolidayRequest(TestCase):
     # Delete holidayRequest route tests
     @patch("db.crud.getOneRecordByColumnName")
     @patch("db.crud.delete")
-    def test_delete_holidayRequest_sucessful(self, mock_get, mock_delete):
+    def test_delete_holidayRequest_successful(self, mock_get, mock_delete):
         # Mock the return value of the getOneRecordByColumnName function
         mock_get.return_value = {
             "id": 1,

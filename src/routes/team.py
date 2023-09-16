@@ -34,4 +34,3 @@ def delete_team(team_name: str):
     """Delete a team"""
     crud.getOneRecordByColumnName(TeamsModel, "name", team_name)
     crud.delete(TeamsModel, "name", team_name)
-

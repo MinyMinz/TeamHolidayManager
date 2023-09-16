@@ -90,7 +90,7 @@ class Test_Api_Role(TestCase):
         self.assertEqual(result["detail"], "No records found")
 
     @patch("db.crud.create")
-    def test_post_role(self, mock_return):
+    def test_create_role(self, mock_return):
         # mock the create method to do nothing
         mock_return.return_value = None
 

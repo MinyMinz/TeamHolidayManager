@@ -70,9 +70,8 @@ def create(model: any, data: dict):
     \n :param model: type any
     \n :param data: type dict"""
     try:
-        db.add(
-            model(**data)
-        )  # model(**data) unpacks the dictionary and maps it to the model
+        # model(**data) unpacks the dictionary and maps it to the model
+        db.add(model(**data))
         db.commit()
     except Exception:
         db.rollback()
