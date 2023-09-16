@@ -46,26 +46,31 @@ def fetch_user(user_id: int = None, email: str = None, team: str = None):
 @userRouter.post("", status_code=status.HTTP_201_CREATED)
 def create_user(user: UserSchema):
     """Create a new user"""
-    getSuperAdmin = crud.getOneRecordByColumnName(UsersModel, "role_name", "SuperAdmin")
+    # Check if the user to create is the SuperAdmin as SuperAdmin is a reserved role and should always exist
     if user.role_name == "SuperAdmin":
-        if getSuperAdmin is not None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="You can only have one SuperAdmin",
-            )
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You cannot create a user with this role",
+        )
     crud.create(UsersModel, dict(user))
 
 
 @userRouter.put("", status_code=status.HTTP_200_OK)
 def update_user(user: UserSchema):
     """Update an existing user"""
-    getSuperAdmin = crud.getOneRecordByColumnName(UsersModel, "role_name", "SuperAdmin")
-    if user.role_name == "SuperAdmin":
-        if getSuperAdmin is not None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="You can only have one SuperAdmin",
-            )
+    # Get the user to update
+    userToUpdate = crud.getOneRecordByColumnName(UsersModel, "id", user.id)
+    # If the user to update is the SuperAdmin and the new role is not SuperAdmin
+    if userToUpdate["role_name"] == "SuperAdmin" and user.role_name != "SuperAdmin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You cannot change the role of this user",
+        )
+    elif userToUpdate["role_name"] != "SuperAdmin" and user.role_name == "SuperAdmin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You cannot assign this role to a user",
+        )
     crud.update(UsersModel, "id", dict(user))
 
 
@@ -74,9 +79,7 @@ def delete_user(user_id: int):
     """Delete an existing user
     \n Args:
     \n    user_id (int): The id of the user to delete"""
-    user: UserSchema = crud.getOneRecordByColumnName(
-        UsersModel, "role_name", "SuperAdmin"
-    )
+    user = crud.getOneRecordByColumnName(UsersModel, "role_name", "SuperAdmin")
     if user["id"] == user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

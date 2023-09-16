@@ -8,9 +8,9 @@ from fastapi import HTTPException, status
 import unittest
 
 
-class Test_Api_User(TestCase):
+class Test_Api_Login_User(TestCase):
     """
-    The following tests are for the User API endpoints
+    The following tests are for the Login User API endpoints
     """
 
     @classmethod
@@ -21,7 +21,7 @@ class Test_Api_User(TestCase):
 
     # Login route tests
     @patch("db.crud.getOneRecordByColumnName")
-    def test_login_user_sucessful(self, mock_return):
+    def test_login_user_successful(self, mock_return):
         # Mock the return value of the getOneRecordByColumnName function
         mock_return.return_value = {
             "id": 1,
@@ -29,7 +29,7 @@ class Test_Api_User(TestCase):
             "password": "test_password",
             "full_name": "full_name",
             "team_name": "test_team",
-            "role_name": "test_role",
+            "role_name": "User",
         }
 
         # call the API endpoint
@@ -52,9 +52,21 @@ class Test_Api_User(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+
+class Test_Api_Get_User(TestCase):
+    """
+    The following tests are for the Get User API endpoints
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """Setup the test environment once before all tests"""
+        cls.client = TestClient(app)
+        pass
+
     # Get all users route tests
     @patch("db.crud.getAllRecords")
-    def test_get_all_users_sucessful(self, mock_return):
+    def test_get_all_users_successful(self, mock_return):
         # Mock the return value of the getAllRecords function
         mock_return.return_value = [
             {
@@ -63,7 +75,7 @@ class Test_Api_User(TestCase):
                 "password": "test_password",
                 "full_name": "full_name",
                 "team_name": "test_team",
-                "role_name": "test_role",
+                "role_name": "User",
             },
             {
                 "id": 2,
@@ -71,7 +83,7 @@ class Test_Api_User(TestCase):
                 "password": "test_password2",
                 "full_name": "full_name2",
                 "team_name": "test_team2",
-                "role_name": "test_role2",
+                "role_name": "User",
             },
         ]
 
@@ -99,7 +111,7 @@ class Test_Api_User(TestCase):
 
     # Get user by id route tests
     @patch("db.crud.getOneRecordByColumnName")
-    def test_get_user_by_id_sucessful(self, mock_return):
+    def test_get_user_by_id_successful(self, mock_return):
         # Mock the return value of the getOneRecordByColumnName function
         mock_return.return_value = {
             "id": 1,
@@ -107,7 +119,7 @@ class Test_Api_User(TestCase):
             "password": "test_password",
             "full_name": "full_name",
             "team_name": "test_team",
-            "role_name": "test_role",
+            "role_name": "User",
         }
 
         # call the API endpoint
@@ -133,7 +145,7 @@ class Test_Api_User(TestCase):
 
     # Get user by email route tests
     @patch("db.crud.getOneRecordByColumnName")
-    def test_get_user_by_email_sucessful(self, mock_return):
+    def test_get_user_by_email_successful(self, mock_return):
         # Mock the return value of the getOneRecordByColumnName function
         mock_return.return_value = {
             "id": 1,
@@ -141,7 +153,7 @@ class Test_Api_User(TestCase):
             "password": "test_password",
             "full_name": "full_name",
             "team_name": "test_team",
-            "role_name": "test_role",
+            "role_name": "User",
         }
 
         # call the API endpoint
@@ -166,7 +178,7 @@ class Test_Api_User(TestCase):
 
     # Get all users by team name route tests
     @patch("db.crud.getAllRecordsByColumnName")
-    def test_get_all_users_by_team_name_sucessful(self, mock_return):
+    def test_get_all_users_by_team_name_successful(self, mock_return):
         # Mock the return value of the getAllRecordsByColumnName function
         mock_return.return_value = [
             {
@@ -175,7 +187,7 @@ class Test_Api_User(TestCase):
                 "password": "test_password",
                 "full_name": "full_name",
                 "team_name": "test_team",
-                "role_name": "test_role",
+                "role_name": "User",
             },
             {
                 "id": 2,
@@ -183,7 +195,7 @@ class Test_Api_User(TestCase):
                 "password": "test_password2",
                 "full_name": "full_name2",
                 "team_name": "test_team",
-                "role_name": "test_role",
+                "role_name": "User",
             },
         ]
 
@@ -207,13 +219,20 @@ class Test_Api_User(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    # Create user route tests
-    @patch("db.crud.create")
-    @patch("db.crud.getOneRecordByColumnName")
-    def test_create_user_sucessful(self, mock_get, mock_create):
-        # Mock the return value of the getOneRecordByColumnName function
-        mock_get.return_value = None
 
+class Test_Api_Create_User(TestCase):
+    """
+    The following tests are for the Create User API endpoints
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """Setup the test environment once before all tests"""
+        cls.client = TestClient(app)
+        pass
+
+    @patch("db.crud.create")
+    def test_create_user_successful(self, mock_create):
         # Mock the return value of the create function
         mock_create.return_value = None
 
@@ -225,15 +244,62 @@ class Test_Api_User(TestCase):
                 "password": "test_password",
                 "full_name": "full_name",
                 "team_name": "test_team",
-                "role_name": "test_role",
+                "role_name": "User",
             },
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    # Update user route tests
-    @patch("db.crud.getOneRecordByColumnName")
+    @patch("db.crud.create")
+    def test_create_user_with_admin_role_successful(self, mock_create):
+        # Mock the return value of the create function
+        mock_create.return_value = None
+
+        response = self.client.post(
+            "/users",
+            json={
+                "id": None,
+                "email": "test_email",
+                "password": "test_password",
+                "full_name": "full_name",
+                "team_name": "test_team",
+                "role_name": "Admin",
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    
+    @patch("db.crud.create")
+    def test_create_user_with_super_admin_roole_successful(self, mock_create):
+        # Mock the return value of the create function
+        mock_create.return_value = None
+
+        response = self.client.post(
+            "/users",
+            json={
+                "id": None,
+                "email": "test_email",
+                "password": "test_password",
+                "full_name": "full_name",
+                "team_name": "test_team",
+                "role_name": "SuperAdmin",
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class Test_Api_Update_User(TestCase):
+    """
+    The following tests are for the Update User API endpoints
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """Setup the test environment once before all tests"""
+        cls.client = TestClient(app)
+        pass
+
     @patch("db.crud.update")
-    def test_update_user_sucessful(self, mock_get, mock_update):
+    @patch("db.crud.getOneRecordByColumnName")
+    def test_update_user_successful(self, mock_get, mock_update):
         # Mock the return value of the getOneRecordByColumnName function
         mock_get.return_value = {
             "id": 1,
@@ -241,7 +307,7 @@ class Test_Api_User(TestCase):
             "password": "test_password",
             "full_name": "full_name",
             "team_name": "test_team",
-            "role_name": "test_role",
+            "role_name": "User",
         }
 
         # Mock the return value of the update function
@@ -251,20 +317,205 @@ class Test_Api_User(TestCase):
             "/users",
             json={
                 "id": 1,
-                "email": "test_email",
-                "password": "test_password",
-                "full_name": "full_name",
+                "email": "test_email2",
+                "password": "test_password2",
+                "full_name": "full_name2",
                 "team_name": "test_team",
-                "role_name": "test_role",
+                "role_name": "User",
             },
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    # Delete user route tests
+    @patch("db.crud.update")
+    @patch("db.crud.getOneRecordByColumnName")
+    def test_update_user_where_role_is_changed_to_admin_successful(
+        self, mock_get, mock_update
+    ):
+        # Mock the return value of the getOneRecordByColumnName function
+        mock_get.return_value = {
+            "id": 1,
+            "email": "test_email",
+            "password": "test_password",
+            "full_name": "full_name",
+            "team_name": "test_team",
+            "role_name": "User",
+        }
+
+        # Mock the return value of the update function
+        mock_update.return_value = None
+
+        response = self.client.put(
+            "/users",
+            json={
+                "id": 1,
+                "email": "test_email2",
+                "password": "test_password2",
+                "full_name": "full_name2",
+                "team_name": "test_team",
+                "role_name": "Admin",
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @patch("db.crud.update")
+    @patch("db.crud.getOneRecordByColumnName")
+    def test_update_user_where_role_is_changed_to_super_admin_unsuccessful(
+        self, mock_get, mock_update
+    ):
+        # Mock the return value of the getOneRecordByColumnName function
+        mock_get.return_value = {
+            "id": 1,
+            "email": "test_email",
+            "password": "test_password",
+            "full_name": "full_name",
+            "team_name": "test_team",
+            "role_name": "User",
+        }
+
+        # Mock the return value of the update function
+        mock_update.return_value = None
+
+        response = self.client.put(
+            "/users",
+            json={
+                "id": 1,
+                "email": "test_email2",
+                "password": "test_password2",
+                "full_name": "full_name2",
+                "team_name": "test_team",
+                "role_name": "SuperAdmin",
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(
+            response.json()["detail"], "You cannot assign this role to a user"
+        )
+
+    @patch("db.crud.update")
+    @patch("db.crud.getOneRecordByColumnName")
+    def test_update_user_where_user_is_super_admin_and_role_not_changed_successful(
+        self, mock_get, mock_update
+    ):
+        # Mock the return value of the getOneRecordByColumnName function
+        mock_get.return_value = {
+            "id": 1,
+            "email": "test_email",
+            "password": "test_password",
+            "full_name": "full_name",
+            "team_name": "test_team",
+            "role_name": "SuperAdmin",
+        }
+
+        # Mock the return value of the update function
+        mock_update.return_value = None
+
+        response = self.client.put(
+            "/users",
+            json={
+                "id": 1,
+                "email": "test_email2",
+                "password": "test_password2",
+                "full_name": "full_name2",
+                "team_name": "test_team",
+                "role_name": "SuperAdmin",
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @patch("db.crud.update")
+    @patch("db.crud.getOneRecordByColumnName")
+    def test_update_user_where_user_is_super_admin_and_role_is_changed_unsuccessful(
+        self, mock_get, mock_update
+    ):
+        # Mock the return value of the getOneRecordByColumnName function
+        mock_get.return_value = {
+            "id": 1,
+            "email": "test_email",
+            "password": "test_password",
+            "full_name": "full_name",
+            "team_name": "test_team",
+            "role_name": "SuperAdmin",
+        }
+
+        # Mock the return value of the update function
+        mock_update.return_value = None
+
+        response = self.client.put(
+            "/users",
+            json={
+                "id": 1,
+                "email": "test_email2",
+                "password": "test_password2",
+                "full_name": "full_name2",
+                "team_name": "test_team",
+                "role_name": "User",
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(
+            response.json()["detail"], "You cannot change the role of this user"
+        )
+
+
+class Test_Api_Delete_User(TestCase):
+    """
+    The following tests are for the Delete User API endpoints
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """Setup the test environment once before all tests"""
+        cls.client = TestClient(app)
+        pass
+
     @patch("db.crud.delete")
     @patch("db.crud.getOneRecordByColumnName")
-    def test_delete_user_sucessful(self, mock_get, mock_delete):
-        # Mock the return value of the getOneRecordByColumnName function
+    def test_delete_user_where_user_is_standard_successful(self, mock_get, mock_delete):
+        # Mock the return value of the getOneRecordByColumnName function of user to delete
+        mock_get.return_value = {
+            "id": 1,
+            "email": "test_email",
+            "password": "test_password",
+            "full_name": "full_name",
+            "team_name": "test_team",
+            "role_name": "User",
+        }
+
+        # Mock the return value of the delete function
+        mock_delete.return_value = None
+
+        response = self.client.delete(
+            "/users?user_id=2",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @patch("db.crud.delete")
+    @patch("db.crud.getOneRecordByColumnName")
+    def test_delete_user_where_user_is_admin_successful(self, mock_get, mock_delete):
+        # Mock the return value of the getOneRecordByColumnName function of user to delete
+        mock_get.return_value = {
+            "id": 1,
+            "email": "test_email",
+            "password": "test_password",
+            "full_name": "full_name",
+            "team_name": "test_team",
+            "role_name": "Admin",
+        }
+
+        # Mock the return value of the delete function
+        mock_delete.return_value = None
+
+        response = self.client.delete(
+            "/users?user_id=2",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @patch("db.crud.delete")
+    @patch("db.crud.getOneRecordByColumnName")
+    def test_delete_user_where_user_is_super_admin_unsuccessful(
+        self, mock_get, mock_delete
+    ):
+        # Mock the return value of the getOneRecordByColumnName function of user to delete
         mock_get.return_value = {
             "id": 2,
             "email": "test_email",
@@ -278,9 +529,10 @@ class Test_Api_User(TestCase):
         mock_delete.return_value = None
 
         response = self.client.delete(
-            "/users?user_id=1",
+            "/users?user_id=2",
         )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.json()["detail"], "You cannot delete this user")
 
 
 @ddt
@@ -300,7 +552,7 @@ class Test_User_Valdiators(TestCase):
         ("password", "test_password"),
         ("full_name", "test_name"),
         ("team_name", "test_team"),
-        ("role_name", "test_role"),
+        ("role_name", "User"),
     )
     @unpack
     def test_user_validator_empty_fields_on_create(self, field_name, field_value):
@@ -330,7 +582,7 @@ class Test_User_Valdiators(TestCase):
         ("password", "test_password"),
         ("full_name", "test_name"),
         ("team_name", "test_team"),
-        ("role_name", "test_role"),
+        ("role_name", "User"),
     )
     @unpack
     def test_user_validator_empty_fields_on_update(self, field_name, field_value):
