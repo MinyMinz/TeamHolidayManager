@@ -5,7 +5,33 @@ Also manages a list of teams, users within their teams and their application pri
 
 You can interact with the API using the swagger docs hosted on AWS or by running the project locally (please follow steps from Getting Started when running locally).
 
-# SwaggerDocs
+## Built With
+
+- [FastAPI](https://fastapi.tiangolo.com/)
+- [Docker](https://www.docker.com/)
+- [Postgres](https://www.postgresql.org/)
+- [Supabase](https://supabase.io/)
+- [AWS](https://aws.amazon.com/)
+
+
+## Project Structure
+The code is split into 4 main sections with the main.py file being the entry point to the project:
+
+- database:
+   - migrations
+   - crud operations
+   - database connection
+- models:
+   - sqlalchemy models for the database tables
+- routes:
+   - All the routes for the project:
+      - /roles
+      - /teams
+      - /users
+      - /holiday-request
+- schemas:
+   - pydantic schemas for the routes
+   - including validation of fields
 
 ## Live SwaggerDocs
 
