@@ -1,7 +1,7 @@
 from models.team import Teams as TeamsModel
 from schemas.team import Teams as TeamSchema
 import db.crud as crud
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, status
 
 teamRouter = APIRouter()
 

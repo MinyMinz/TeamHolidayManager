@@ -1,7 +1,7 @@
 from models.role import Roles as RolesModel
 from schemas.role import Roles as RoleSchema
 import db.crud as crud
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, status
 
 roleRouter = APIRouter()
 
