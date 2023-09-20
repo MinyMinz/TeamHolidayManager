@@ -60,13 +60,16 @@ def update_user(user: UserSchema):
     """Update an existing user"""
     # Get the user to update
     userToUpdate = crud.getOneRecordByColumnName(UsersModel, "id", user.id)
-    # If the user to update is the SuperAdmin and the new role is not SuperAdmin
+    # If the user to update is the SuperAdmin and the role set in the request is not SuperAdmin (i.e. superadmin is trying to change their role)
     if userToUpdate["role_name"] == "SuperAdmin" and user.role_name != "SuperAdmin":
+        # if above is true throw error HTTP_403_FORBIDDEN
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You cannot change the role of this user",
         )
+    # If the user to update is not the SuperAdmin and the role set in the request is SuperAdmin (i.e. the user is trying to make a user a SuperAdmin) 
     elif userToUpdate["role_name"] != "SuperAdmin" and user.role_name == "SuperAdmin":
+        # if above is true throw error HTTP_403_FORBIDDEN
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You cannot assign this role to a user",
@@ -79,10 +82,13 @@ def delete_user(user_id: int):
     """Delete an existing user
     \n Args:
     \n    user_id (int): The id of the user to delete"""
+    # Check if the user to delete is the SuperAdmin as SuperAdmin is a reserved role and should always exist
     user = crud.getOneRecordByColumnName(UsersModel, "role_name", "SuperAdmin")
+    # If the user to delete is the SuperAdmin throw an error
     if user["id"] == user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="You cannot delete this user",
         )
+    # If the user to delete is not the SuperAdmin delete the user
     crud.delete(UsersModel, "id", user_id)

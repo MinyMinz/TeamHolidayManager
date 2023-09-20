@@ -5,6 +5,9 @@ db = SessionLocal()
 
 
 # Read Operations
+
+
+# get one result from the query and return it
 def getOneRecordByColumnName(model: any, columnName: str, value: any):
     """Get one record from the database based on the model, column name and value
     \n :param model: type any
@@ -24,6 +27,7 @@ def getOneRecordByColumnName(model: any, columnName: str, value: any):
     return result
 
 
+# get all the results from the query and return it
 def getAllRecords(model: any, columnToOrderBy: str = None):
     """Get all records from the database based the model Order by the column name
     \n :param model: type any"""
@@ -65,6 +69,9 @@ def getAllRecordsByColumnName(
 
 
 # Create Operations
+
+
+# create a record in the database based on the model and data
 def create(model: any, data: dict):
     """Create a record in the database based on the model and data
     \n :param model: type any
@@ -94,7 +101,7 @@ def update(model: any, columnName: str, data: dict):
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
 
 
-# Delete Operations
+# Delete Operation
 def delete(model: any, columnName: str, uid: any):
     """delete a record in the database based on the model and uid
     \n :param model: type any

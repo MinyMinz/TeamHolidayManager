@@ -13,7 +13,6 @@ You can interact with the API using the swagger docs hosted on AWS or by running
 - [Supabase](https://supabase.io/)
 - [AWS](https://aws.amazon.com/)
 
-
 ## Project Structure
 The code is split into 4 main sections with the main.py file being the entry point to the project:
 

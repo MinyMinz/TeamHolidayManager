@@ -32,6 +32,7 @@ def create_holiday_request(holiday_request: holidaySchema):
 @holidayRouter.put("", status_code=status.HTTP_200_OK)
 def update_holiday_request(holiday_request: holidaySchema):
     """Update an existing holiday request"""
+    # first check that the holiday request exists then update it
     crud.getOneRecordByColumnName(holidayModel, "id", holiday_request.id)
     crud.update(holidayModel, "id", dict(holiday_request))
 
@@ -41,5 +42,6 @@ def delete_holiday_request(holiday_id: int):
     """Delete an existing holiday request
     \n Args:
         holiday_id (int): The id of the holiday request to delete"""
+    # first check that the holiday request exists then delete it
     crud.getOneRecordByColumnName(holidayModel, "id", holiday_id)
     crud.delete(holidayModel, "id", holiday_id)

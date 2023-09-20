@@ -7,6 +7,7 @@ from routes.holidayRequests import holidayRouter
 from routes.team import teamRouter
 from routes.role import roleRouter
 
+# Set up OpenAPI
 description = """
 The Team Holiday Manager API is a RESTful API that allows you to manage your team's holiday requests. 
 
@@ -36,6 +37,7 @@ You can:
 * **Delete Holiday Requests**.
 """
 
+# Set up OpenAPI tags
 tags_metadata = [
     {
         "name": "Roles",
@@ -55,10 +57,10 @@ tags_metadata = [
     },
 ]
 
-
 stage = env.get("AWS_STAGE_NAME", None)
 root_path = f"/{stage}" if stage else "/"
 
+# Set up FastAPI
 app = FastAPI(
     title="Phoebus Software Shared Calendar API",
     openapi_tags=tags_metadata,
@@ -77,21 +79,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Set up routes
 app.include_router(roleRouter, prefix="/roles", tags=["Roles"])
 app.include_router(teamRouter, prefix="/teams", tags=["Teams"])
 app.include_router(userRouter, prefix="/users", tags=["Users"])
 app.include_router(holidayRouter, prefix="/holiday-request", tags=["Holiday Requests"])
 
-
+# Test route to check the API is working
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
 
+# Set up Mangum for AWS Lambda
 handler = Mangum(app=app)
 
 
-# LOCAL TESTING
-# import uvicorn
+# LOCAL TESTING - Run the main.py locally
+import uvicorn
 
-# if __name__ == "__main__":
-#     uvicorn.run(app, host="", port=8000)
+if __name__ == "__main__":
+    uvicorn.run(app, host="", port=8000)

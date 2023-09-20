@@ -3,7 +3,14 @@ from typing import Optional
 
 
 class Users(BaseModel):
-    """User Schema"""
+    """User Schema
+    \n Attributes:
+        id (int): User id
+        email (str): User email
+        password (str): User password
+        full_name (str): User full name
+        team_name (str): User team name
+        role_name (str): User role name"""
 
     id: Optional[int]
     email: str

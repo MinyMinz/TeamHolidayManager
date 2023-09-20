@@ -2,7 +2,10 @@ from pydantic import BaseModel, field_validator
 
 
 class Teams(BaseModel):
-    """Team Schema"""
+    """Team Schema
+    \n Attributes:
+        name (str): Team name
+        description (str): Team description"""
 
     name: str
     description: str

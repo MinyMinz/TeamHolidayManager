@@ -4,7 +4,16 @@ from datetime import date
 
 
 class HolidayRequests(BaseModel):
-    """Holiday Request Schema"""
+    """Holiday Request Schema
+    \n Attributes:
+        id (int): The id of the holiday request
+        description (str): The description of the holiday request
+        start_date (date): The start date of the holiday request
+        end_date (date): The end date of the holiday request
+        time_of_day (str): The time of day of the holiday request
+        team_name (str): The name of the team the holiday request is for
+        user_id (int): The id of the user the holiday request is for
+        approved (bool): Whether the holiday request has been approved or not"""
 
     id: Optional[int] = None
     description: Optional[str] = None
@@ -17,12 +26,6 @@ class HolidayRequests(BaseModel):
 
     class Config:
         from_attributes = True
-
-    @field_validator("team_name")
-    def validate_fields(cls, value, info: FieldValidationInfo):
-        if not value:
-            raise ValueError(f"{info.field_name} cannot be empty")
-        return value
 
     @field_validator("time_of_day")
     def validate_time_of_day(cls, value, info: FieldValidationInfo):
