@@ -116,8 +116,8 @@ class Test_Api_HolidayRequest(TestCase):
         self.assertEqual(response.json()[0]["full_name"], "test_user1")
         self.assertEqual(response.json()[1]["id"], 2)
         self.assertEqual(response.json()[1]["description"], "test_description2")
-        self.assertEqual(response.json()[0]["user_id"], 1)
-        self.assertEqual(response.json()[0]["full_name"], "test_user1")
+        self.assertEqual(response.json()[1]["user_id"], 1)
+        self.assertEqual(response.json()[1]["full_name"], "test_user1")
 
     @patch("db.crud.getHolidayRequestsByField")
     def test_get_all_holiday_request_by_team_name_where_no_holiday_request_exist(
