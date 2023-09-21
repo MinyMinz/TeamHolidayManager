@@ -27,6 +27,12 @@ class HolidayRequests(BaseModel):
     class Config:
         from_attributes = True
 
+    @field_validator("team_name")
+    def validate_team_name(cls, value, info: FieldValidationInfo):
+        if not value:
+            raise ValueError(f"{info.field_name} cannot be empty")
+        return value
+
     @field_validator("time_of_day")
     def validate_time_of_day(cls, value, info: FieldValidationInfo):
         """Validate that time_of_day is either "AM" or "PM" when start_date and end_date are equal"""

@@ -276,8 +276,8 @@ class Test_HolidayRequest_Valdiators(TestCase):
         cls.client = TestClient(app)
         pass
 
-    def test_holiday_request_validator_empty_standard_fields_on_create(self):
-        """Parameterized test for HolidayRequest validator when doing POST request based on HolidayRequest.py Schema"""
+    def test_holiday_request_validator_empty_team_name_on_create(self):
+        """Test for HolidayRequest validator based on HolidayRequest.py Schema"""
 
         # test user validator based on user.py Schema
         response = self.client.post(
@@ -289,12 +289,35 @@ class Test_HolidayRequest_Valdiators(TestCase):
                 "end_date": "2021-01-01",
                 "time_of_day": "AM",
                 "team_name": "",
+                "user_id": 1,
             },
         )
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertEqual(
             response.json()["detail"][0]["msg"],
             f"Value error, team_name cannot be empty",
+        )
+    
+    def test_holiday_request_validator_empty_user_id_on_create(self):
+        """Test for HolidayRequest validator based on HolidayRequest.py Schema"""
+
+        # test user validator based on user.py Schema
+        response = self.client.post(
+            "/holiday-request",
+            json={
+                "id": None,
+                "description": "description",
+                "start_date": "2021-01-01",
+                "end_date": "2021-01-01",
+                "time_of_day": "AM",
+                "team_name": "team_name",
+                "user_id": None,
+            },
+        )
+        self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
+        self.assertEqual(
+            response.json()["detail"][0]["msg"],
+            f"Input should be a valid integer",
         )
 
     def test_holiday_request_validator_empty_start_date(self):
@@ -318,6 +341,8 @@ class Test_HolidayRequest_Valdiators(TestCase):
         )
 
     def test_holiday_request_validator_empty_end_date(self):
+        """Test for HolidayRequest validator based on HolidayRequest.py Schema"""
+
         # test user validator based on user.py Schema
         response = self.client.post(
             "/holiday-request",
@@ -338,6 +363,8 @@ class Test_HolidayRequest_Valdiators(TestCase):
     def test_holiday_request_validator_dates_are_equal_and_time_of_day_field_not_set(
         self,
     ):
+        """Test for HolidayRequest validator based on HolidayRequest.py Schema"""
+
         # test user validator based on user.py Schema
         response = self.client.post(
             "/holiday-request",
@@ -359,7 +386,7 @@ class Test_HolidayRequest_Valdiators(TestCase):
     def test_holiday_request_validator_date_fields_are_equal_and_time_of_day_field_invalid(
         self,
     ):
-        """Parameterized test for HolidayRequest validator when doing POST request based on HolidayRequest.py Schema"""
+        """Test for HolidayRequest validator based on HolidayRequest.py Schema"""
 
         # test user validator based on user.py Schema
         response = self.client.post(
