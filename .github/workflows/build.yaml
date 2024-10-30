@@ -24,7 +24,6 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.9.13' # Install exact Python version
-          cache: 'pip' # Cache the pip packages
 
       - name: Install python packages # Install all dependencies used
         run: |
@@ -32,6 +31,8 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run python tests
+        env:
+          PYTHONPATH: src  # Add src to PYTHONPATH
         run: |
           python -m unittest discover -s src/tests -p test_*.py
           
