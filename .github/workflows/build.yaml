@@ -1,5 +1,5 @@
 # github action.yml
-name: 'TeamHolidayManager'
+name: 'Test Python Application'
 
 on:
   workflow_dispatch:
@@ -18,12 +18,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-
+    
       - name: Checkout the repository
-        uses: actions/checkout@v3 # Checkout the repository to github runner
+        uses: ./.github/actions/checkout # Use local checkout action
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: ./.github/actions/setup-python # Use local setup-python action
         with:
           python-version: '3.9.13' # Install exact Python version
 
@@ -36,15 +36,6 @@ jobs:
         run: |
           python -m unittest discover -s tests -p test_*.py
           
-      - name: Run the py script
+      - name: Run the py script # Run the main python script to check if it runs
         run: |
           python src/main.py
-
-      - name: Commit and push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
-          commit_user_name: github-actions[bot]
-          commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
-          commit_message: "Update holidays"
