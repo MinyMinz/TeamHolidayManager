@@ -1,8 +1,7 @@
 name: 'Checkout'
 description: 'Checkout the repository'
 runs:
-  using: 'docker'
-  image: 'alpine:latest'
-  steps:
-    - run: apk add git
-    - run: git clone ${{ github.repository }} .
+  using: 'composite'
+steps:
+  - run: git clone ${{ github.repository }} .
+    shell: bash

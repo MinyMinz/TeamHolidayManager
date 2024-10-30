@@ -18,9 +18,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    
+
+      # - name: Checkout the repository
+      #   uses: ./.github/actions/checkout # Use local checkout action
+
       - name: Checkout the repository
-        uses: ./.github/actions/checkout # Use local checkout action
+        uses: actions/checkout@v3 # Use the official checkout action
 
       - name: Setup Python
         uses: ./.github/actions/setup-python # Use local setup-python action

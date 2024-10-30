@@ -1,7 +1,7 @@
 name: 'Setup Python'
 description: 'Setup Python environment'
 runs:
-  using: 'docker'
-  image: 'python:3.9.13'
-  steps:
-    - run: python -m pip install --upgrade pip
+  using: 'composite'
+steps:
+  - run: python -m pip install --upgrade pip
+    shell: bash
