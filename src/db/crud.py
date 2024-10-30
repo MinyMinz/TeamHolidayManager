@@ -3,9 +3,7 @@ from fastapi import HTTPException, status
 
 db = SessionLocal()
 
-
 # Read Operations
-
 
 # get one result from the query and return it
 def getOneRecordByColumnName(model: any, columnName: str, value: any):
@@ -67,9 +65,7 @@ def getAllRecordsByColumnName(
     checkIfResultIsEmpty(result)
     return result
 
-
 # Create Operations
-
 
 # create a record in the database based on the model and data
 def create(model: any, data: dict):
@@ -83,7 +79,6 @@ def create(model: any, data: dict):
     except Exception:
         db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
-
 
 # Update Operation
 def update(model: any, columnName: str, data: dict):
@@ -100,7 +95,6 @@ def update(model: any, columnName: str, data: dict):
         db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
 
-
 # Delete Operation
 def delete(model: any, columnName: str, uid: any):
     """delete a record in the database based on the model and uid
@@ -114,7 +108,6 @@ def delete(model: any, columnName: str, uid: any):
         db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
 
-
 # Helper Functions
 def checkIfResultIsEmpty(result: any):
     """@Helper Function
@@ -123,11 +116,9 @@ def checkIfResultIsEmpty(result: any):
     if not result or len(result) == 0:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "No records found")
 
-
 # holidayRequest Specific
 from models.holidayRequests import HolidayRequests as holidayModel
 from models.user import Users as userModel
-
 
 # get all holiday requests for a specific user or team and return full name with user id
 def getHolidayRequestsByField(columnName: str, value: any, columnToOrderBy: str = None):
@@ -146,7 +137,6 @@ def getHolidayRequestsByField(columnName: str, value: any, columnToOrderBy: str 
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
     checkIfResultIsEmpty(result)
     return result
-
 
 # get all holiday requests return full name with user id
 def getAllHolidayRequests(columnToOrderBy: str = None):

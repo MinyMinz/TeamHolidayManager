@@ -38,7 +38,7 @@ class Test_Api_Role(TestCase):
         response = self.client.get("/roles")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         result = response.json()
-        self.assertEquals(len(result), 2)
+        self.assertEqual(len(result), 2)
         self.assertEqual(result[0]["name"], "Admin")
         self.assertEqual(result[0]["description"], "Admin user")
 

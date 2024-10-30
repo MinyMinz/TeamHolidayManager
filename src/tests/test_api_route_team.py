@@ -40,7 +40,7 @@ class Test_Api_Team(TestCase):
         response = self.client.get("/teams")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         result = response.json()
-        self.assertEquals(len(result), 3)
+        self.assertEqual(len(result), 3)
         self.assertEqual(result[0]["name"], "GG")
         self.assertEqual(result[0]["description"], "Team GG")
 

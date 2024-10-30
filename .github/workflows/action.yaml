@@ -10,9 +10,9 @@ on:
     types:
       - merged
       - closed
-  schedule:
-    - branch: main
-      cron: '0 0 * * *' # Run every day at 00:00 UTC
+  # schedule:
+  #   - branch: main
+  #     cron: '0 0 * * *' # Run every day at 00:00 UTC
 
 jobs:
   build:
@@ -20,32 +20,31 @@ jobs:
     steps:
 
       - name: Checkout the repository
-        uses: actions/checkout@v2 # Checkout the repository to github runner
+        uses: actions/checkout@v3 # Checkout the repository to github runner
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.9.13' #Install exact python version
+          python-version: '3.9.13' # Install exact Python version
 
-      - name: Install python packages #Install all dependencies used
+      - name: Install python packages # Install all dependencies used
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+
+      - name: Run python tests
+        run: |
+          python -m unittest discover -s tests -p test_*.py
           
       - name: Run the py script
         run: |
           python src/main.py
 
-      - name: Commit files
-        run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add .
-          git commit -m "Update holidays"
-          git push
-
-      - name: push changes
+      - name: Commit and push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: main
+          commit_user_name: github-actions[bot]
+          commit_user_email: 41898282+github-actions[bot]@users.noreply.github.com
+          commit_message: "Update holidays"
