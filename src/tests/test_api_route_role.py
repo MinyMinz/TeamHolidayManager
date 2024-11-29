@@ -1,3 +1,4 @@
+import os
 from unittest.mock import patch
 from fastapi.testclient import TestClient
 from main import app
@@ -5,7 +6,6 @@ from unittest import TestCase
 from fastapi import HTTPException, status
 
 import unittest
-
 
 class Test_Api_Role(TestCase):
     """
@@ -15,6 +15,7 @@ class Test_Api_Role(TestCase):
     @classmethod
     def setUpClass(cls):
         """Setup the test environment once before all tests"""
+        os.environ['DATABASE_URL'] = "postgresql://user:password@postgresDB:5432/holidaymanager"
         cls.client = TestClient(app)
         pass
 

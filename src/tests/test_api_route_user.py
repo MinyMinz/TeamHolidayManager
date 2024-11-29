@@ -1,3 +1,4 @@
+import os
 from ddt import ddt, data, unpack
 from unittest.mock import patch
 from fastapi.testclient import TestClient
@@ -7,7 +8,6 @@ from fastapi import HTTPException, status
 
 import unittest
 
-
 class Test_Api_Login_User(TestCase):
     """
     The following tests are for the Login User API endpoints
@@ -16,6 +16,7 @@ class Test_Api_Login_User(TestCase):
     @classmethod
     def setUpClass(cls):
         """Setup the test environment once before all tests"""
+        os.environ['DATABASE_URL'] = "postgresql://user:password@postgresDB:5432/holidaymanager"
         cls.client = TestClient(app)
         pass
 

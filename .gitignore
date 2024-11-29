@@ -153,3 +153,5 @@ cython_debug/
 
 # Miscellaneous
 commands.txt
+docker-compose-prod.yml
+.env
