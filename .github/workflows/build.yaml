@@ -31,7 +31,7 @@ jobs:
 
       - name: Run python tests
         env:
-          DATABASE_URL: "postgresql://test:tests@postgresDB:5432/holidaymanager" # Set the environment variable here
+          DATABASE_URL: "postgresql://localhost:5432/mockdb" # Set the environment variable here
           PYTHONPATH: src  # Add src to PYTHONPATH
         run: |
           python -m unittest discover -s src/tests -p test_*.py
