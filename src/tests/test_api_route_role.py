@@ -15,7 +15,7 @@ class Test_Api_Role(TestCase):
     @classmethod
     def setUpClass(cls):
         """Setup the test environment once before all tests"""
-        os.environ['DATABASE_URL'] = "postgresql://user:password@postgresDB:5432/holidaymanager"
+        os.environ["DATABASE_URL"] = "postgresql://user:password@postgresDB:5432/holidaymanager"
         cls.client = TestClient(app)
         pass
 
