@@ -4,53 +4,13 @@ from fastapi.testclient import TestClient
 from main import app
 from unittest import TestCase
 from fastapi import HTTPException, status
+from jose import jwt
 
 import unittest
 
-class Test_Api_Login_User(TestCase):
-    """
-    The following tests are for the Login User API endpoints
-    """
+token = jwt.encode({"sub": "test_email", "id": 1}, "Temp", algorithm="HS256")
 
-    @classmethod
-    def setUpClass(cls):
-        """Setup the test environment once before all tests"""
-        cls.client = TestClient(app)
-        pass
-
-    # Login route tests
-    @patch("db.crud.getOneRecordByColumnName")
-    def test_login_user_successful(self, mock_return):
-        # Mock the return value of the getOneRecordByColumnName function
-        mock_return.return_value = {
-            "id": 1,
-            "email": "test_email",
-            "password": "test_password",
-            "full_name": "full_name",
-            "team_name": "test_team",
-            "role_name": "User",
-        }
-
-        # call the API endpoint
-        response = self.client.post(
-            "/users/login", json={"email": "test_email", "password": "test_password"}
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-    @patch("db.crud.getOneRecordByColumnName")
-    def test_login_user_where_user_does_not_exist(self, mock_return):
-        # Mock the return value of the getOneRecordByColumnName function to return HTTPException 404
-        mock_return.side_effect = HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="No records found"
-        )
-
-        # call the API endpoint
-        response = self.client.post(
-            "/users/login",
-            json={"email": "test_email", "password": "test_password"},
-        )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
+headers = {"Authorization": f"Bearer {token}"}
 
 class Test_Api_Get_User(TestCase):
     """
@@ -87,9 +47,7 @@ class Test_Api_Get_User(TestCase):
         ]
 
         # call the API endpoint
-        response = self.client.get(
-            "/users",
-        )
+        response = self.client.get("/users", headers=headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 2)
         self.assertEqual(response.json()[0]["id"], 1)
@@ -101,10 +59,11 @@ class Test_Api_Get_User(TestCase):
         mock_return.side_effect = HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="No records found"
         )
-
+        
         # call the API endpoint
         response = self.client.get(
             "/users",
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -124,6 +83,7 @@ class Test_Api_Get_User(TestCase):
         # call the API endpoint
         response = self.client.get(
             "/users?user_id=1",
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["id"], 1)
@@ -139,6 +99,7 @@ class Test_Api_Get_User(TestCase):
         # call the API endpoint
         response = self.client.get(
             "/users?user_id=1",
+            headers = headers            
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -158,6 +119,7 @@ class Test_Api_Get_User(TestCase):
         # call the API endpoint
         response = self.client.get(
             "/users?email=test_email",
+            headers = headers    
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.json()["id"], 1)
@@ -172,6 +134,7 @@ class Test_Api_Get_User(TestCase):
 
         response = self.client.get(
             "/users?email=test_email",
+            headers = headers    
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -200,6 +163,7 @@ class Test_Api_Get_User(TestCase):
 
         response = self.client.get(
             "/users?team=test_team",
+             headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 2)
@@ -215,6 +179,7 @@ class Test_Api_Get_User(TestCase):
 
         response = self.client.get(
             "/users?team=test_team",
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -245,6 +210,7 @@ class Test_Api_Create_User(TestCase):
                 "team_name": "test_team",
                 "role_name": "User",
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -263,6 +229,7 @@ class Test_Api_Create_User(TestCase):
                 "team_name": "test_team",
                 "role_name": "Admin",
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
     
@@ -281,6 +248,7 @@ class Test_Api_Create_User(TestCase):
                 "team_name": "test_team",
                 "role_name": "SuperAdmin",
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -322,6 +290,7 @@ class Test_Api_Update_User(TestCase):
                 "team_name": "test_team",
                 "role_name": "User",
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -353,6 +322,7 @@ class Test_Api_Update_User(TestCase):
                 "team_name": "test_team",
                 "role_name": "Admin",
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -384,6 +354,7 @@ class Test_Api_Update_User(TestCase):
                 "team_name": "test_team",
                 "role_name": "SuperAdmin",
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(
@@ -418,6 +389,7 @@ class Test_Api_Update_User(TestCase):
                 "team_name": "test_team",
                 "role_name": "SuperAdmin",
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -449,6 +421,7 @@ class Test_Api_Update_User(TestCase):
                 "team_name": "test_team",
                 "role_name": "User",
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(
@@ -485,6 +458,7 @@ class Test_Api_Delete_User(TestCase):
 
         response = self.client.delete(
             "/users?user_id=2",
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -506,6 +480,7 @@ class Test_Api_Delete_User(TestCase):
 
         response = self.client.delete(
             "/users?user_id=2",
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -529,6 +504,7 @@ class Test_Api_Delete_User(TestCase):
 
         response = self.client.delete(
             "/users?user_id=2",
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(response.json()["detail"], "You cannot delete this user")
@@ -569,6 +545,7 @@ class Test_User_Valdiators(TestCase):
                 "team_name": field_value if field_name != "team_name" else "",
                 "role_name": field_value if field_name != "role_name" else "",
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertEqual(
@@ -599,6 +576,7 @@ class Test_User_Valdiators(TestCase):
                 "team_name": field_value if field_name != "team_name" else "",
                 "role_name": field_value if field_name != "role_name" else "",
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertEqual(

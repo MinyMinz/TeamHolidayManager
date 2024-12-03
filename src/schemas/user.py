@@ -27,13 +27,3 @@ class Users(BaseModel):
         if not v:
             raise ValueError(f"{info.field_name} cannot be empty")
         return v
-
-
-class Auth(BaseModel):
-    """Auth Schema"""
-
-    email: str
-    password: str
-
-    class Config:
-        from_attributes = True

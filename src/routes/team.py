@@ -1,14 +1,15 @@
+from fastapi import APIRouter, Depends, status
+from routes.auth import fetch_current_user
 from models.team import Teams as TeamsModel
 from schemas.team import Teams as TeamSchema
 import db.crud as crud
-from fastapi import APIRouter, status
 
 teamRouter = APIRouter()
 
 
 # Team Routes
 @teamRouter.get("", status_code=status.HTTP_200_OK)
-def fetch_team(team_name: str = None):
+def fetch_team(team_name: str = None, payload=Depends(fetch_current_user)):
     """Fetch a team by name or all teams
     \n Args:
         Optional team_name (str): The name of the team to fetch"""
@@ -18,19 +19,19 @@ def fetch_team(team_name: str = None):
 
 
 @teamRouter.post("", status_code=status.HTTP_201_CREATED)
-def create_team(team: TeamSchema):
+def create_team(team: TeamSchema, payload=Depends(fetch_current_user)):
     """Create a new team"""
     crud.create(TeamsModel, dict(team))
 
 
 @teamRouter.put("", status_code=status.HTTP_200_OK)
-def update_team(team: TeamSchema):
+def update_team(team: TeamSchema, payload=Depends(fetch_current_user)):
     """Update a team"""
     crud.update(TeamsModel, dict(team))
 
 
 @teamRouter.delete("", status_code=status.HTTP_200_OK)
-def delete_team(team_name: str):
+def delete_team(team_name: str, payload=Depends(fetch_current_user)):
     """Delete a team"""
     # first check that the team exists then delete it
     crud.getOneRecordByColumnName(TeamsModel, "name", team_name)

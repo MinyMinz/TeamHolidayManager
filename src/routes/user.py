@@ -1,30 +1,14 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
+from routes.auth import fetch_current_user
 from models.user import Users as UsersModel
 from schemas.user import Users as UserSchema
-from schemas.user import Auth as AuthSchema
 import db.crud as crud
 
 
 userRouter = APIRouter()
 
-
-@userRouter.post("/login", status_code=status.HTTP_200_OK)
-def login_user(login: AuthSchema):
-    """Login a user
-    \n Args:
-    \n    login (AuthSchema): The email and password of the user to login"""
-    if login.email is not None and login.password is not None:
-        user = crud.getOneRecordByColumnName(UsersModel, "email", login.email)
-        if user["password"] != login.password:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Incorrect login details",
-            )
-        return user
-
-
 @userRouter.get("", status_code=status.HTTP_200_OK)
-def fetch_user(user_id: int = None, email: str = None, team: str = None):
+def fetch_user(user_id: int = None, email: str = None, team: str = None, payload=Depends(fetch_current_user)):
     """Fetch a user by id, email, or team name or all users
     \n Args:
     \n    Optional user_id (int): The id of the user to fetch
@@ -44,7 +28,7 @@ def fetch_user(user_id: int = None, email: str = None, team: str = None):
 
 
 @userRouter.post("", status_code=status.HTTP_201_CREATED)
-def create_user(user: UserSchema):
+def create_user(user: UserSchema, payload=Depends(fetch_current_user) ):
     """Create a new user"""
     # Check if the user to create is the SuperAdmin as SuperAdmin is a reserved role and should always exist
     if user.role_name == "SuperAdmin":
@@ -56,7 +40,7 @@ def create_user(user: UserSchema):
 
 
 @userRouter.put("", status_code=status.HTTP_200_OK)
-def update_user(user: UserSchema):
+def update_user(user: UserSchema, payload=Depends(fetch_current_user)):
     """Update an existing user"""
     # Get the user to update
     userToUpdate = crud.getOneRecordByColumnName(UsersModel, "id", user.id)
@@ -78,7 +62,7 @@ def update_user(user: UserSchema):
 
 
 @userRouter.delete("", status_code=status.HTTP_200_OK)
-def delete_user(user_id: int):
+def delete_user(user_id: int, payload=Depends(fetch_current_user)):
     """Delete an existing user
     \n Args:
     \n    user_id (int): The id of the user to delete"""

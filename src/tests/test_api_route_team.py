@@ -3,8 +3,13 @@ from fastapi.testclient import TestClient
 from main import app
 from unittest import TestCase
 from fastapi import HTTPException, status
+from jose import jwt
 
 import unittest
+
+token = jwt.encode({"sub": "test_email", "id": 1}, "Temp", algorithm="HS256")
+
+headers = {"Authorization": f"Bearer {token}"}
 
 class Test_Api_Team(TestCase):
     """
@@ -36,7 +41,7 @@ class Test_Api_Team(TestCase):
         ]
 
         # call the API endpoint
-        response = self.client.get("/teams")
+        response = self.client.get("/teams", headers=headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         result = response.json()
         self.assertEqual(len(result), 3)
@@ -51,7 +56,7 @@ class Test_Api_Team(TestCase):
         )
 
         # call the API endpoint
-        response = self.client.get("/teams")
+        response = self.client.get("/teams", headers=headers)
         self.assertEqual(response.status_code, 404)
         result = response.json()
         self.assertEqual(result["detail"], "No records found")
@@ -64,7 +69,7 @@ class Test_Api_Team(TestCase):
             "description": "Team GG",
         }
 
-        response = self.client.get("/teams?team_name=GG")
+        response = self.client.get("/teams?team_name=GG", headers=headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         result = response.json()
         self.assertEqual(result["name"], "GG")
@@ -78,7 +83,7 @@ class Test_Api_Team(TestCase):
         )
 
         # call the API endpoint
-        response = self.client.get("/teams?team_name=FakeTeamName")
+        response = self.client.get("/teams?team_name=FakeTeamName", headers=headers)
         self.assertEqual(response.status_code, 404)
         result = response.json()
         self.assertEqual(result["detail"], "No records found")
@@ -95,6 +100,7 @@ class Test_Api_Team(TestCase):
                 "name": "TestTeam",
                 "description": "Test Team",
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -110,6 +116,7 @@ class Test_Api_Team(TestCase):
                 "name": "TestTeam",
                 "description": "Test Team",
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -128,6 +135,7 @@ class Test_Api_Team(TestCase):
         # call the API endpoint
         response = self.client.delete(
             "/teams?team_name=TestTeam",
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -146,7 +154,9 @@ class Test_Team_Valdiators(TestCase):
     def test_team_validator_name_empty(self):
         # test team validator based on team.py Schema
         response = self.client.post(
-            "/teams", json={"name": "", "description": "test_description"}
+            "/teams", 
+            json={"name": "", "description": "test_description"},
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertEqual(
@@ -166,8 +176,9 @@ class Test_Team_Valdiators(TestCase):
             "/teams",
             json={
                 "name": "test_name",
-                "description": "",
+                "description": ""
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 

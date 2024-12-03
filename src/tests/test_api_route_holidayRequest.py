@@ -3,8 +3,13 @@ from fastapi.testclient import TestClient
 from main import app
 from unittest import TestCase
 from fastapi import HTTPException, status
+from jose import jwt
 
 import unittest
+
+token = jwt.encode({"sub": "test_email", "id": 1}, "Temp", algorithm="HS256")
+
+headers = {"Authorization": f"Bearer {token}"}
 
 class Test_Api_HolidayRequest(TestCase):
     """
@@ -58,6 +63,7 @@ class Test_Api_HolidayRequest(TestCase):
         # call the API endpoint
         response = self.client.get(
             "/holiday-request",
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 3)
@@ -74,6 +80,7 @@ class Test_Api_HolidayRequest(TestCase):
         # call the API endpoint
         response = self.client.get(
             "/holiday-request",
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -106,6 +113,7 @@ class Test_Api_HolidayRequest(TestCase):
 
         response = self.client.get(
             "/holiday-request?team_name=test_team",
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 2)
@@ -129,6 +137,7 @@ class Test_Api_HolidayRequest(TestCase):
 
         response = self.client.get(
             "/holiday-request?team_name=test_team",
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -161,6 +170,7 @@ class Test_Api_HolidayRequest(TestCase):
 
         response = self.client.get(
             "/holiday-request?user_id=1",
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 2)
@@ -189,6 +199,7 @@ class Test_Api_HolidayRequest(TestCase):
                 "team_name": "test_team",
                 "user_id": 1,
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -221,6 +232,7 @@ class Test_Api_HolidayRequest(TestCase):
                 "team_name": "test_team",
                 "user_id": 1,
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -237,6 +249,7 @@ class Test_Api_HolidayRequest(TestCase):
                 "team_name": "test_team",
                 "user_id": 1,
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
 
@@ -260,6 +273,7 @@ class Test_Api_HolidayRequest(TestCase):
 
         response = self.client.delete(
             "/holiday-request?holiday_id=1",
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -290,6 +304,7 @@ class Test_HolidayRequest_Valdiators(TestCase):
                 "team_name": "",
                 "user_id": 1,
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertEqual(
@@ -312,6 +327,7 @@ class Test_HolidayRequest_Valdiators(TestCase):
                 "team_name": "team_name",
                 "user_id": None,
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertEqual(
@@ -333,6 +349,7 @@ class Test_HolidayRequest_Valdiators(TestCase):
                 "time_of_day": "AM",
                 "team_name": "team_name",
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertEqual(
@@ -353,6 +370,7 @@ class Test_HolidayRequest_Valdiators(TestCase):
                 "time_of_day": "AM",
                 "team_name": "team_name",
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertEqual(
@@ -375,6 +393,7 @@ class Test_HolidayRequest_Valdiators(TestCase):
                 "time_of_day": None,
                 "team_name": "team_name",
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertEqual(
@@ -398,6 +417,7 @@ class Test_HolidayRequest_Valdiators(TestCase):
                 "time_of_day": "AB",
                 "team_name": "team_name",
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertEqual(
