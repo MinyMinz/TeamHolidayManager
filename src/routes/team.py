@@ -8,12 +8,12 @@ teamRouter = APIRouter()
 
 # Team Routes
 @teamRouter.get("", status_code=status.HTTP_200_OK)
-def fetch_team(team_name: str = None, payload=Depends(fetch_current_user)):
+def fetch_team(payload=Depends(fetch_current_user)):
     """Fetch a team by name or all teams
     \n Args:
         Optional team_name (str): The name of the team to fetch"""
-    if team_name is not None:
-        return crud.getOneRecordByColumnName(TeamsModel, "name", team_name)
+    if payload["role_name"] == "Admin" or payload["role_name"] == "User":
+        return crud.getOneRecordByColumnName(TeamsModel, "name", payload["team_name"])
     return crud.getAllRecords(TeamsModel)
 
 @teamRouter.post("", status_code=status.HTTP_201_CREATED)

@@ -8,12 +8,12 @@ from fastapi import APIRouter, status
 roleRouter = APIRouter()
 
 @roleRouter.get("", status_code=status.HTTP_200_OK)
-def fetch_role(role_name: str = None, payload=Depends(fetch_current_user)):
+def fetch_role(payload=Depends(fetch_current_user)):
     """Fetch a role by name or all roles
     \n Args:
         Optional role_name (str): The name of the role to fetch"""
-    if role_name is not None:
-        return crud.getOneRecordByColumnName(RolesModel, "name", role_name)
+    if payload["role_name"] == "Admin" or payload["role_name"] == "User":
+        return crud.getOneRecordByColumnName(RolesModel, "name", "User")
     return crud.getAllRecords(RolesModel)
 
 @roleRouter.post("", status_code=status.HTTP_201_CREATED)

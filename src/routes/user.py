@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from routes.auth import fetch_current_user, bcrypt_context, check_if_user_is_superAdmin
+from routes.auth import fetch_current_user, bcrypt_context, check_if_user_is_superAdmin, mapToUserAPISchema
 from models.user import Users as UsersModel
 from schemas.user import Users as UserSchema
 from schemas.user import UserAPI as UserAPISchema
@@ -8,26 +8,29 @@ import db.crud as crud
 userRouter = APIRouter()
 
 @userRouter.get("", status_code=status.HTTP_200_OK)
-def fetch_user(user_id: int = None, email: str = None, team: str = None, payload=Depends(fetch_current_user)):
+def fetch_user(payload=Depends(fetch_current_user)):
     """Fetch a user by id, email, or team name or all users
     \n Args:
     \n    Optional user_id (int): The id of the user to fetch
     \n    Optional email (str): The email of the user to fetch
     \n    Optional team (str): The team name of the users to fetch"""
-
-    # If query parameters are passed, return the user(s) that match the query
-    if user_id is not None:
-        user = crud.getOneRecordByColumnName(UsersModel, "id", user_id)
-        return mapToUserAPISchema(user)
-    elif email is not None:
-        user = crud.getOneRecordByColumnName(UsersModel, "email", email)
-        return mapToUserAPISchema(user)
-    elif team is not None:
-        users = crud.getAllRecordsByColumnName(UsersModel, "team_name", team, "id")
-        return [mapToUserAPISchema(user) for user in users]
+    
+    if payload["role_name"] == "SuperAdmin":
+        return [mapToUserAPISchema(user) for user in crud.getAllRecords(UsersModel, "id")]
+    elif payload["role_name"] == "Admin":
+        return [mapToUserAPISchema(user) for user in crud.getAllRecordsByColumnName(UsersModel, "team_name", payload["team_name"], "id")]
     else:
-        users = crud.getAllRecords(UsersModel, "id")
-        return [mapToUserAPISchema(user) for user in users]
+        return mapToUserAPISchema(crud.getOneRecordByColumnName(UsersModel, "id", payload["id"]))
+    # # If query parameters are passed, return the user(s) that match the query
+    # if user_id is not None:
+    #     user = crud.getOneRecordByColumnName(UsersModel, "id", user_id)
+    #     return mapToUserAPISchema(user)
+    # elif team is not None:
+    #     users = crud.getAllRecordsByColumnName(UsersModel, "team_name", team, "id")
+    #     return [mapToUserAPISchema(user) for user in users]
+    # else:
+    #     users = crud.getAllRecords(UsersModel, "id")
+    #     return [mapToUserAPISchema(user) for user in users]
 
 @userRouter.post("", status_code=status.HTTP_201_CREATED)
 def create_user(user: UserSchema, payload=Depends(fetch_current_user)):
@@ -115,12 +118,3 @@ def delete_user(user_id: int, payload=Depends(fetch_current_user)):
         )
     # If the user to delete is not the SuperAdmin delete the user
     crud.delete(UsersModel, "id", user_id)
-
-def mapToUserAPISchema(user):
-    return UserAPISchema(
-        id=user["id"],
-        email=user["email"],
-        full_name=user["full_name"],
-        team_name=user["team_name"],
-        role_name=user["role_name"]
-    )

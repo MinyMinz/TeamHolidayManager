@@ -18,8 +18,7 @@ def getOneRecordByColumnName(model: any, columnName: str, value: any):
             .filter(getattr(model, columnName) == value)
             .first()
         )
-    except Exception as e:
-        print(e)
+    except Exception:
         db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
     checkIfResultIsEmpty(result)

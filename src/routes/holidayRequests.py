@@ -9,22 +9,15 @@ holidayRouter = APIRouter()
 
 # Get all holiday requests for and optionally specify a user or team
 @holidayRouter.get("", status_code=status.HTTP_200_OK)
-def fetch_holiday_requests(user_id: int = None, team_name: str = None, payload=Depends(fetch_current_user)):
+def fetch_holiday_requests(payload=Depends(fetch_current_user)):
     """Fetch all holiday requests for a specific user or team
     \n Args:
         user_id (int): The id of the user to fetch holiday requests for
         team_name (str): The name of the team to fetch holiday requests for"""
-    if user_id is not None:
-        holiday = crud.getHolidayRequestsByField("user_id", user_id, "id")
-        # Check if the user is the same user or an admin or super admin
-        if user_id != payload["id"] and payload["role_name"] != "SuperAdmin" and payload["role_name"] != "Admin":
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="You are not authorized to view holiday requests for another user"
-            )
-        return holiday
-    elif team_name is not None:
-        return crud.getHolidayRequestsByField("team_name", team_name, "id")
+    if payload["role_name"] == "User":
+        return crud.getHolidayRequestsByField("user_id", payload["id"], "id")
+    elif payload["role_name"] == "Admin":
+        return crud.getHolidayRequestsByField("team_name", payload["team_name"], "id")
     else:
         return crud.getAllHolidayRequests("id")
 
