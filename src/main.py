@@ -29,6 +29,7 @@ You can:
 * **Read Users**.
 * **Update Users**.
 * **Delete Users**.
+* **Update User Password**.
 
 ## Holiday Requests
 You can:
@@ -39,8 +40,7 @@ You can:
 
 ## Authentication
 You can:
-* **Login**.
-* **Create Users**.
+* **Login for token**.
 """
 
 # Set up OpenAPI tags
