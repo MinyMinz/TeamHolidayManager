@@ -17,6 +17,8 @@ def fetch_role(payload=Depends(fetch_current_user)):
     return crud.getAllRecords(RolesModel)
 
 @roleRouter.post("", status_code=status.HTTP_201_CREATED)
-def fetch_role(role: RoleSchema, payload=Depends(fetch_current_user)):
+def create_role(role: RoleSchema, payload=Depends(fetch_current_user)):
     """Create a new role"""
-    crud.create(RolesModel, dict(role))
+    if payload["role_name"] == "SuperAdmin" :
+        crud.create(RolesModel, dict(role))
+    return

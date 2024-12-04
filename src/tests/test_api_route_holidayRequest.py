@@ -8,7 +8,6 @@ from jose import jwt
 import unittest
 
 token = jwt.encode({"sub": "test_email", "id": 1}, "Temp", algorithm="HS256")
-
 headers = {"Authorization": f"Bearer {token}"}
 
 class Test_Api_HolidayRequest(TestCase):
@@ -87,6 +86,8 @@ class Test_Api_HolidayRequest(TestCase):
     # Get all holiday-request by team name route tests
     @patch("db.crud.getHolidayRequestsByField")
     def test_get_all_holiday_request_by_team_name_successful(self, mock_return):
+        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "Admin", "team_name": "test_team"}, "Temp", algorithm="HS256")
+        headers = {"Authorization": f"Bearer {token}"}
         # Mock the return value of the getAllRecordsByColumnName function
         mock_return.return_value = [
             {
@@ -112,7 +113,7 @@ class Test_Api_HolidayRequest(TestCase):
         ]
 
         response = self.client.get(
-            "/holiday-request?team_name=test_team",
+            "/holiday-request",
             headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -127,16 +128,16 @@ class Test_Api_HolidayRequest(TestCase):
         self.assertEqual(response.json()[1]["full_name"], "test_user1")
 
     @patch("db.crud.getHolidayRequestsByField")
-    def test_get_all_holiday_request_by_team_name_where_no_holiday_request_exist(
-        self, mock_return
-    ):
+    def test_get_all_holiday_request_by_team_name_where_no_holiday_request_exist(self, mock_return):
+        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "Admin", "team_name": "test_team"}, "Temp", algorithm="HS256")
+        headers = {"Authorization": f"Bearer {token}"}
         # Mock the return value of the getAllRecordsByColumnName function to return HTTPException 404
         mock_return.side_effect = HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="No records found"
         )
 
         response = self.client.get(
-            "/holiday-request?team_name=test_team",
+            "/holiday-request",
             headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
@@ -144,6 +145,8 @@ class Test_Api_HolidayRequest(TestCase):
     # Get all holiday-request by user id route tests
     @patch("db.crud.getHolidayRequestsByField")
     def test_get_all_holiday_request_by_user_id_successful(self, mock_return):
+        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "User", "team_name": "test_team"}, "Temp", algorithm="HS256")
+        headers = {"Authorization": f"Bearer {token}"}
         # Mock the return value of the getAllRecordsByColumnName function
         mock_return.return_value = [
             {

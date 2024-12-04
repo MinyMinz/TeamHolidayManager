@@ -63,13 +63,15 @@ class Test_Api_Team(TestCase):
 
     @patch("db.crud.getOneRecordByColumnName")
     def test_get_Team_by_name(self, mock_return):
+        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "Admin", "team_name": "Team GG"}, "Temp", algorithm="HS256")
+        headers = {"Authorization": f"Bearer {token}"}
         # mock the getOneRecordByColumnName method to return a Team
         mock_return.return_value = {
             "name": "GG",
             "description": "Team GG",
         }
 
-        response = self.client.get("/teams?team_name=GG", headers=headers)
+        response = self.client.get("/teams", headers=headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         result = response.json()
         self.assertEqual(result["name"], "GG")
@@ -77,13 +79,15 @@ class Test_Api_Team(TestCase):
 
     @patch("db.crud.getOneRecordByColumnName")
     def test_get_Team_by_name_where_name_does_not_exist(self, mock_return):
+        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "Admin", "team_name": "Team GG"}, "Temp", algorithm="HS256")
+        headers = {"Authorization": f"Bearer {token}"}
         # mock the getOneRecordByColumnName method to return a Team
         mock_return.side_effect = HTTPException(
             status.HTTP_404_NOT_FOUND, detail="No records found"
         )
 
         # call the API endpoint
-        response = self.client.get("/teams?team_name=FakeTeamName", headers=headers)
+        response = self.client.get("/teams", headers=headers)
         self.assertEqual(response.status_code, 404)
         result = response.json()
         self.assertEqual(result["detail"], "No records found")

@@ -26,6 +26,8 @@ class Test_Api_Get_User(TestCase):
     # Get all users route tests
     @patch("db.crud.getAllRecords")
     def test_get_all_users_successful(self, mock_return):
+        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "SuperAdmin", "team_name": "test_team"}, "Temp", algorithm="HS256")
+        headers = {"Authorization": f"Bearer {token}"}
         # Mock the return value of the getAllRecords function
         mock_return.return_value = [
             {
@@ -55,6 +57,8 @@ class Test_Api_Get_User(TestCase):
 
     @patch("db.crud.getAllRecords")
     def test_get_all_users_where_no_users_exist(self, mock_return):
+        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "SuperAdmin", "team_name": "test_team"}, "Temp", algorithm="HS256")
+        headers = {"Authorization": f"Bearer {token}"}
         # Mock the return value of the getAllRecords function to return HTTPException 404
         mock_return.side_effect = HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="No records found"
@@ -103,44 +107,11 @@ class Test_Api_Get_User(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    # Get user by email route tests
-    @patch("db.crud.getOneRecordByColumnName")
-    def test_get_user_by_email_successful(self, mock_return):
-        # Mock the return value of the getOneRecordByColumnName function
-        mock_return.return_value = {
-            "id": 1,
-            "email": "test_email",
-            "password": "test_password",
-            "full_name": "full_name",
-            "team_name": "test_team",
-            "role_name": "User",
-        }
-
-        # call the API endpoint
-        response = self.client.get(
-            "/users?email=test_email",
-            headers = headers    
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json()["id"], 1)
-        self.assertEqual(response.json()["email"], "test_email")
-
-    @patch("db.crud.getOneRecordByColumnName")
-    def test_get_user_by_email_where_user_does_not_exist(self, mock_return):
-        # Mock the return value of the getOneRecordByColumnName function to return HTTPException 404
-        mock_return.side_effect = HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="No records found"
-        )
-
-        response = self.client.get(
-            "/users?email=test_email",
-            headers = headers    
-        )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
     # Get all users by team name route tests
     @patch("db.crud.getAllRecordsByColumnName")
     def test_get_all_users_by_team_name_successful(self, mock_return):
+        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "Admin", "team_name": "test_team"}, "Temp", algorithm="HS256")
+        headers = {"Authorization": f"Bearer {token}"}
         # Mock the return value of the getAllRecordsByColumnName function
         mock_return.return_value = [
             {
@@ -161,10 +132,7 @@ class Test_Api_Get_User(TestCase):
             },
         ]
 
-        response = self.client.get(
-            "/users?team=test_team",
-             headers = headers
-        )
+        response = self.client.get("/users",headers = headers)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 2)
         self.assertEqual(response.json()[0]["id"], 1)
@@ -172,15 +140,14 @@ class Test_Api_Get_User(TestCase):
 
     @patch("db.crud.getAllRecordsByColumnName")
     def test_get_all_users_by_team_name_where_no_users_exist(self, mock_return):
+        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "Admin", "team_name": "test_team"}, "Temp", algorithm="HS256")
+        headers = {"Authorization": f"Bearer {token}"}
         # Mock the return value of the getAllRecordsByColumnName function to return HTTPException 404
         mock_return.side_effect = HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="No records found"
         )
 
-        response = self.client.get(
-            "/users?team=test_team",
-            headers = headers
-        )
+        response = self.client.get("/users", headers = headers)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
