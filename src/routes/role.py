@@ -7,7 +7,6 @@ from fastapi import APIRouter, status
 
 roleRouter = APIRouter()
 
-
 @roleRouter.get("", status_code=status.HTTP_200_OK)
 def fetch_role(role_name: str = None, payload=Depends(fetch_current_user)):
     """Fetch a role by name or all roles

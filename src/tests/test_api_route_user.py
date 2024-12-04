@@ -8,9 +8,9 @@ from jose import jwt
 
 import unittest
 
-token = jwt.encode({"sub": "test_email", "id": 1}, "Temp", algorithm="HS256")
+globalTestToken = jwt.encode({"sub": "test_email", "id": 1}, "Temp", algorithm="HS256")
 
-headers = {"Authorization": f"Bearer {token}"}
+headers = {"Authorization": f"Bearer {globalTestToken}"}
 
 class Test_Api_Get_User(TestCase):
     """
@@ -199,6 +199,9 @@ class Test_Api_Create_User(TestCase):
     def test_create_user_successful(self, mock_create):
         # Mock the return value of the create function
         mock_create.return_value = None
+        
+        token = jwt.encode({"sub": "test_email", "id": 1, "role_name":"SuperAdmin"}, "Temp", algorithm="HS256")
+        header = {"Authorization": f"Bearer {token}"}
 
         response = self.client.post(
             "/users",
@@ -210,14 +213,17 @@ class Test_Api_Create_User(TestCase):
                 "team_name": "test_team",
                 "role_name": "User",
             },
-            headers = headers
+            headers = header
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     @patch("db.crud.create")
-    def test_create_user_with_admin_role_successful(self, mock_create):
+    def test_create_user_with_admin_role_UnAuthorized(self, mock_create):
         # Mock the return value of the create function
         mock_create.return_value = None
+
+        token = jwt.encode({"sub": "test_email", "id": 1, "role_name":"Admin"}, "Temp", algorithm="HS256")
+        header = {"Authorization": f"Bearer {token}"}
 
         response = self.client.post(
             "/users",
@@ -229,14 +235,17 @@ class Test_Api_Create_User(TestCase):
                 "team_name": "test_team",
                 "role_name": "Admin",
             },
-            headers = headers
+            headers = header
         )
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
     
     @patch("db.crud.create")
-    def test_create_user_with_super_admin_roole_successful(self, mock_create):
+    def test_create_user_with_super_admin_role_Unauthorized(self, mock_create):
         # Mock the return value of the create function
         mock_create.return_value = None
+
+        token = jwt.encode({"sub": "test_email", "id": 1, "role_name":"SuperAdmin"}, "Temp", algorithm="HS256")
+        header = {"Authorization": f"Bearer {token}"}
 
         response = self.client.post(
             "/users",
@@ -248,7 +257,7 @@ class Test_Api_Create_User(TestCase):
                 "team_name": "test_team",
                 "role_name": "SuperAdmin",
             },
-            headers = headers
+            headers = header
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
@@ -363,9 +372,10 @@ class Test_Api_Update_User(TestCase):
 
     @patch("db.crud.update")
     @patch("db.crud.getOneRecordByColumnName")
-    def test_update_user_where_user_is_super_admin_and_role_not_changed_successful(
-        self, mock_get, mock_update
-    ):
+    def test_update_user_where_user_is_super_admin_and_role_not_changed_successful(self, mock_get, mock_update):
+        token = jwt.encode({"sub": "test_email", "id": 1, "role_name":"SuperAdmin"}, "Temp", algorithm="HS256")
+        header = {"Authorization": f"Bearer {token}"}
+        
         # Mock the return value of the getOneRecordByColumnName function
         mock_get.return_value = {
             "id": 1,
@@ -389,9 +399,9 @@ class Test_Api_Update_User(TestCase):
                 "team_name": "test_team",
                 "role_name": "SuperAdmin",
             },
-            headers = headers
+            headers = header
         )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @patch("db.crud.update")
     @patch("db.crud.getOneRecordByColumnName")
@@ -429,6 +439,68 @@ class Test_Api_Update_User(TestCase):
         )
 
 
+class Test_Api_Update_User_Password(TestCase):
+    """
+    The following tests are for the Update User API endpoints
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        """Setup the test environment once before all tests"""
+        cls.client = TestClient(app)
+        pass
+
+    @patch("db.crud.updatePassword")
+    @patch("db.crud.getOneRecordByColumnName")
+    def test_update_user_password_as_user_successful(self, mock_get, mock_update):
+        token = jwt.encode({"sub": "test_email", "id": 1, "role_name":"User"}, "Temp", algorithm="HS256")
+        header = {"Authorization": f"Bearer {token}"}
+        
+        # Mock the return value of the getOneRecordByColumnName function
+        mock_get.return_value = {
+            "id": 1,
+            "email": "test_email",
+            "password": "test_password",
+            "full_name": "full_name",
+            "team_name": "test_team",
+            "role_name": "User",
+        }
+
+        # Mock the return value of the update function
+        mock_update.return_value = None
+
+        response = self.client.patch(
+            "/users/password?user_id=1&password=test_password123",
+            headers = header
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    @patch("db.crud.updatePassword")
+    @patch("db.crud.getOneRecordByColumnName")
+    def test_update_another_users_password_as_a_different_user_successful(self, mock_get, mock_update):
+        token = jwt.encode({"sub": "test_email", "id": 1, "role_name":"User"}, "Temp", algorithm="HS256")
+        header = {"Authorization": f"Bearer {token}"}
+        
+        # Mock the return value of the getOneRecordByColumnName function
+        mock_get.return_value = {
+            "id": 2,
+            "email": "test_email",
+            "password": "test_password",
+            "full_name": "full_name",
+            "team_name": "test_team",
+            "role_name": "User",
+        }
+
+        # Mock the return value of the update function
+        mock_update.return_value = None
+
+        response = self.client.patch(
+            "/users/password?user_id=2&password=test_password123",
+            headers = header
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
 class Test_Api_Delete_User(TestCase):
     """
     The following tests are for the Delete User API endpoints
@@ -442,7 +514,10 @@ class Test_Api_Delete_User(TestCase):
 
     @patch("db.crud.delete")
     @patch("db.crud.getOneRecordByColumnName")
-    def test_delete_user_where_user_is_standard_successful(self, mock_get, mock_delete):
+    def test_delete_user_where_user_is_standard_logged_in_as_user_unauthorised(self, mock_get, mock_delete):
+        token = jwt.encode({"sub": "test_email", "id": 1, "role_name":"User"}, "Temp", algorithm="HS256")
+        header = {"Authorization": f"Bearer {token}"}
+
         # Mock the return value of the getOneRecordByColumnName function of user to delete
         mock_get.return_value = {
             "id": 1,
@@ -458,13 +533,15 @@ class Test_Api_Delete_User(TestCase):
 
         response = self.client.delete(
             "/users?user_id=2",
-            headers = headers
+            headers = header
         )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     @patch("db.crud.delete")
     @patch("db.crud.getOneRecordByColumnName")
-    def test_delete_user_where_user_is_admin_successful(self, mock_get, mock_delete):
+    def test_delete_user_where_user_is_admin_logged_in_as_admin_unauthorised(self, mock_get, mock_delete):
+        token = jwt.encode({"sub": "test_email", "id": 1, "role_name":"Admin"}, "Temp", algorithm="HS256")
+        header = {"Authorization": f"Bearer {token}"}
         # Mock the return value of the getOneRecordByColumnName function of user to delete
         mock_get.return_value = {
             "id": 1,
@@ -480,19 +557,44 @@ class Test_Api_Delete_User(TestCase):
 
         response = self.client.delete(
             "/users?user_id=2",
-            headers = headers
+            headers = header
+        )
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    @patch("db.crud.delete")
+    @patch("db.crud.getOneRecordByColumnName")
+    def test_delete_user_where_user_is_admin_logged_in_as_superadmin_unauthorised(self, mock_get, mock_delete):
+        token = jwt.encode({"sub": "test_email", "id": 1, "role_name":"SuperAdmin"}, "Temp", algorithm="HS256")
+        header = {"Authorization": f"Bearer {token}"}
+        # Mock the return value of the getOneRecordByColumnName function of user to delete
+        mock_get.return_value = {
+            "id": 2,
+            "email": "test_email2",
+            "password": "test_password",
+            "full_name": "full_name",
+            "team_name": "test_team",
+            "role_name": "Admin",
+        }
+
+        # Mock the return value of the delete function
+        mock_delete.return_value = None
+
+        response = self.client.delete(
+            "/users?user_id=2",
+            headers = header
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     @patch("db.crud.delete")
     @patch("db.crud.getOneRecordByColumnName")
-    def test_delete_user_where_user_is_super_admin_unsuccessful(
-        self, mock_get, mock_delete
-    ):
+    def test_delete_user_where_user_is_super_admin_unsuccessful(self, mock_get, mock_delete):
+        token = jwt.encode({"sub": "test_email", "id": 1, "role_name":"SuperAdmin"}, "Temp", algorithm="HS256")
+        header = {"Authorization": f"Bearer {token}"}
+        
         # Mock the return value of the getOneRecordByColumnName function of user to delete
         mock_get.return_value = {
             "id": 2,
-            "email": "test_email",
+            "email": "test_email2",
             "password": "test_password",
             "full_name": "full_name",
             "team_name": "test_team",
@@ -504,9 +606,9 @@ class Test_Api_Delete_User(TestCase):
 
         response = self.client.delete(
             "/users?user_id=2",
-            headers = headers
+            headers = header
         )
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.json()["detail"], "You cannot delete this user")
 
 
@@ -555,7 +657,6 @@ class Test_User_Valdiators(TestCase):
 
     @data(
         ("email", "test_email"),
-        ("password", "test_password"),
         ("full_name", "test_name"),
         ("team_name", "test_team"),
         ("role_name", "User"),
@@ -563,7 +664,6 @@ class Test_User_Valdiators(TestCase):
     @unpack
     def test_user_validator_empty_fields_on_update(self, field_name, field_value):
         """Parameterized test for user validator based on user.py Schema"""
-
         # test user validator based on user.py Schema
         response = self.client.put(
             "/users",
@@ -571,7 +671,6 @@ class Test_User_Valdiators(TestCase):
                 "id": 1,
                 field_name: None,
                 "email": field_value if field_name != "email" else "",
-                "password": field_value if field_name != "password" else "",
                 "full_name": field_value if field_name != "full_name" else "",
                 "team_name": field_value if field_name != "team_name" else "",
                 "role_name": field_value if field_name != "role_name" else "",

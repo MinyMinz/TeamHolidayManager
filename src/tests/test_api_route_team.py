@@ -7,7 +7,7 @@ from jose import jwt
 
 import unittest
 
-token = jwt.encode({"sub": "test_email", "id": 1}, "Temp", algorithm="HS256")
+token = jwt.encode({"sub": "test_email", "id": 1, "role_name": "SuperAdmin"}, "Temp", algorithm="HS256")
 
 headers = {"Authorization": f"Bearer {token}"}
 

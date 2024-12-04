@@ -254,8 +254,8 @@ class Test_Api_HolidayRequest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
 
     # Delete holidayRequest route tests
-    @patch("db.crud.getOneRecordByColumnName")
     @patch("db.crud.delete")
+    @patch("db.crud.getOneRecordByColumnName")
     def test_delete_holidayRequest_successful(self, mock_get, mock_delete):
         # Mock the return value of the getOneRecordByColumnName function
         mock_get.return_value = {

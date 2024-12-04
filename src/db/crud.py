@@ -109,13 +109,21 @@ def delete(model: any, columnName: str, uid: any):
         db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
 
-# Helper Functions
-def checkIfResultIsEmpty(result: any):
-    """@Helper Function
-    \n Check if the result is empty and raise an exception if it is
-    \n :param result: type any"""
-    if not result or len(result) == 0:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "No records found")
+# User Specific update password only
+def updatePassword(model: any, id: int, data: dict):
+    """Update a record in the database based on the model, column name and data
+    \n :param model: type any
+    \n :param columnName: type str
+    \n :param data: type dict"""
+    try:
+        db.query(model).filter(getattr(model, "id") == id).update(
+            {"password": data["password"]}
+        )
+        db.commit()
+    except Exception as e:
+        print(e)
+        db.rollback()
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
 
 # holidayRequest Specific
 from models.holidayRequests import HolidayRequests as holidayModel
@@ -152,3 +160,11 @@ def getAllHolidayRequests(columnToOrderBy: str = None):
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
     checkIfResultIsEmpty(result)
     return result
+
+# Helper Functions
+def checkIfResultIsEmpty(result: any):
+    """@Helper Function
+    \n Check if the result is empty and raise an exception if it is
+    \n :param result: type any"""
+    if not result or len(result) == 0:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "No records found")
