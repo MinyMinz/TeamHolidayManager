@@ -41,12 +41,15 @@ def authenticate_user(username: str, password: str):
     user = crud.getOneRecordByColumnName(UsersModel, "email", username)
     if not user:
         return False
-    if not bcrypt_context.verify(password, user["password"]):
-        return False
+    verification = bcrypt_context.verify(password, user["password"])
+    if verification == False:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect email or password.")
     return user
 
 def create_access_token(email: str, user_id: str, role: str, expries_delta: timedelta):
-    ## excluded expire for now to avoid issues with testing and demonstrations
+    ##NOTE excluded expire for now for demonstrations
     # expire = datetime.now() + expries_delta
     to_encode = {"sub": email, "id": user_id, "role_name": role}
     # to_encode.update({"exp": expire})
