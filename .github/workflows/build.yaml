@@ -2,14 +2,11 @@ name: 'Build'
 
 on:
   workflow_dispatch:
-     branches:
-      - master
   push:
     branches:
       - master
   pull_request:
     types:
-      - merged
       - closed
 
 jobs:
