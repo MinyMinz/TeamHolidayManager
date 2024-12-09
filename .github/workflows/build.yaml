@@ -30,8 +30,8 @@ jobs:
       - name: Run python tests
         env:
           DATABASE_URL: "postgresql://localhost:5432/mockdb" # Set the environment variable here
-          SECRET_KEY: "mock_secret_key" # Add mock secret key
-          ALGORITHM: "HS256" # Add algorithm variable
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          ALGORITHM: ${{ secrets.ALGORITHM }}  
           PYTHONPATH: src  # Add src to PYTHONPATH
         run: |
           python -m unittest discover -s src/tests -p test_*.py
