@@ -3,8 +3,12 @@ from fastapi.testclient import TestClient
 from main import app
 from unittest import TestCase
 from fastapi import HTTPException, status
+from jose import jwt
 
 import unittest
+
+token = jwt.encode({"sub": "test_email", "id": 1}, "Temp", algorithm="HS256")
+headers = {"Authorization": f"Bearer {token}"}
 
 class Test_Api_HolidayRequest(TestCase):
     """
@@ -58,6 +62,7 @@ class Test_Api_HolidayRequest(TestCase):
         # call the API endpoint
         response = self.client.get(
             "/holiday-request",
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 3)
@@ -74,12 +79,15 @@ class Test_Api_HolidayRequest(TestCase):
         # call the API endpoint
         response = self.client.get(
             "/holiday-request",
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     # Get all holiday-request by team name route tests
     @patch("db.crud.getHolidayRequestsByField")
     def test_get_all_holiday_request_by_team_name_successful(self, mock_return):
+        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "Admin", "team_name": "test_team"}, "Temp", algorithm="HS256")
+        headers = {"Authorization": f"Bearer {token}"}
         # Mock the return value of the getAllRecordsByColumnName function
         mock_return.return_value = [
             {
@@ -105,7 +113,8 @@ class Test_Api_HolidayRequest(TestCase):
         ]
 
         response = self.client.get(
-            "/holiday-request?team_name=test_team",
+            "/holiday-request",
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 2)
@@ -119,22 +128,25 @@ class Test_Api_HolidayRequest(TestCase):
         self.assertEqual(response.json()[1]["full_name"], "test_user1")
 
     @patch("db.crud.getHolidayRequestsByField")
-    def test_get_all_holiday_request_by_team_name_where_no_holiday_request_exist(
-        self, mock_return
-    ):
+    def test_get_all_holiday_request_by_team_name_where_no_holiday_request_exist(self, mock_return):
+        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "Admin", "team_name": "test_team"}, "Temp", algorithm="HS256")
+        headers = {"Authorization": f"Bearer {token}"}
         # Mock the return value of the getAllRecordsByColumnName function to return HTTPException 404
         mock_return.side_effect = HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="No records found"
         )
 
         response = self.client.get(
-            "/holiday-request?team_name=test_team",
+            "/holiday-request",
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     # Get all holiday-request by user id route tests
     @patch("db.crud.getHolidayRequestsByField")
     def test_get_all_holiday_request_by_user_id_successful(self, mock_return):
+        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "User", "team_name": "test_team"}, "Temp", algorithm="HS256")
+        headers = {"Authorization": f"Bearer {token}"}
         # Mock the return value of the getAllRecordsByColumnName function
         mock_return.return_value = [
             {
@@ -161,6 +173,7 @@ class Test_Api_HolidayRequest(TestCase):
 
         response = self.client.get(
             "/holiday-request?user_id=1",
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.json()), 2)
@@ -189,6 +202,7 @@ class Test_Api_HolidayRequest(TestCase):
                 "team_name": "test_team",
                 "user_id": 1,
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
@@ -221,6 +235,7 @@ class Test_Api_HolidayRequest(TestCase):
                 "team_name": "test_team",
                 "user_id": 1,
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -237,12 +252,13 @@ class Test_Api_HolidayRequest(TestCase):
                 "team_name": "test_team",
                 "user_id": 1,
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
 
     # Delete holidayRequest route tests
-    @patch("db.crud.getOneRecordByColumnName")
     @patch("db.crud.delete")
+    @patch("db.crud.getOneRecordByColumnName")
     def test_delete_holidayRequest_successful(self, mock_get, mock_delete):
         # Mock the return value of the getOneRecordByColumnName function
         mock_get.return_value = {
@@ -260,6 +276,7 @@ class Test_Api_HolidayRequest(TestCase):
 
         response = self.client.delete(
             "/holiday-request?holiday_id=1",
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -290,6 +307,7 @@ class Test_HolidayRequest_Valdiators(TestCase):
                 "team_name": "",
                 "user_id": 1,
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertEqual(
@@ -312,6 +330,7 @@ class Test_HolidayRequest_Valdiators(TestCase):
                 "team_name": "team_name",
                 "user_id": None,
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertEqual(
@@ -333,6 +352,7 @@ class Test_HolidayRequest_Valdiators(TestCase):
                 "time_of_day": "AM",
                 "team_name": "team_name",
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertEqual(
@@ -353,6 +373,7 @@ class Test_HolidayRequest_Valdiators(TestCase):
                 "time_of_day": "AM",
                 "team_name": "team_name",
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertEqual(
@@ -375,6 +396,7 @@ class Test_HolidayRequest_Valdiators(TestCase):
                 "time_of_day": None,
                 "team_name": "team_name",
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertEqual(
@@ -398,6 +420,7 @@ class Test_HolidayRequest_Valdiators(TestCase):
                 "time_of_day": "AB",
                 "team_name": "team_name",
             },
+            headers = headers
         )
         self.assertEqual(response.status_code, status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertEqual(

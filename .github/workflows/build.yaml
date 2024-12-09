@@ -2,14 +2,11 @@ name: 'Build'
 
 on:
   workflow_dispatch:
-     branches:
-      - master
   push:
     branches:
       - master
   pull_request:
     types:
-      - merged
       - closed
 
 jobs:
@@ -35,3 +32,5 @@ jobs:
           PYTHONPATH: src  # Add src to PYTHONPATH
         run: |
           python -m unittest discover -s src/tests -p test_*.py
+
+      # TODO: Step to deploy containerised application

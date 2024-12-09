@@ -6,6 +6,7 @@ from routes.user import userRouter
 from routes.holidayRequests import holidayRouter
 from routes.team import teamRouter
 from routes.role import roleRouter
+from routes.auth import authRouter
 
 # Set up OpenAPI
 description = """
@@ -28,6 +29,7 @@ You can:
 * **Read Users**.
 * **Update Users**.
 * **Delete Users**.
+* **Update User Password**.
 
 ## Holiday Requests
 You can:
@@ -35,6 +37,10 @@ You can:
 * **Read Holiday Requests**.
 * **Update Holiday Requests**.
 * **Delete Holiday Requests**.
+
+## Authentication
+You can:
+* **Login for token**.
 """
 
 # Set up OpenAPI tags
@@ -54,6 +60,10 @@ tags_metadata = [
     {
         "name": "Holiday Requests",
         "description": "Operations with Holiday Requests.",
+    },
+    {
+        "name": "Authentication",
+        "description": "Gain access to the APIs.",
     },
 ]
 
@@ -83,12 +93,13 @@ app.add_middleware(
 app.include_router(roleRouter, prefix="/roles", tags=["Roles"])
 app.include_router(teamRouter, prefix="/teams", tags=["Teams"])
 app.include_router(userRouter, prefix="/users", tags=["Users"])
+app.include_router(authRouter, prefix="/auth", tags=["Auth"])
 app.include_router(holidayRouter, prefix="/holiday-request", tags=["Holiday Requests"])
 
 # Test route to check the API is working
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Welcome to the Team Holiday Manager API!"}
 
 # Set up Mangum for AWS Lambda
 handler = Mangum(app=app)
