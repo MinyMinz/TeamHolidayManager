@@ -12,6 +12,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: production # Set the environment to production
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3 # Checkout the repository to github runner
@@ -30,8 +31,8 @@ jobs:
       - name: Run python tests
         env:
           DATABASE_URL: "postgresql://localhost:5432/mockdb" # Set the environment variable here
-          SECRET_KEY: "Temp"
-          ALGORITHM: "HS256"
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          ALGORITHM: ${{ secrets.ALGORITHM }}  
           PYTHONPATH: src  # Add src to PYTHONPATH
         run: |
           python -m unittest discover -s src/tests -p test_*.py
