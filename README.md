@@ -3,7 +3,7 @@
 Fast API project to manage holiday requests using a postgres database.
 Also manages a list of teams, users within their teams and their application privileges.
 
-You can interact with the API using the swagger docs hosted on AWS or by running the project locally (please follow steps from Getting Started when running locally).
+You can interact with the API using the swagger docs hosted on Render or by running the project locally (please follow steps from Getting Started when running locally).
 
 ## Built With
 
@@ -11,7 +11,6 @@ You can interact with the API using the swagger docs hosted on AWS or by running
 - [Docker](https://www.docker.com/)
 - [Postgres](https://www.postgresql.org/)
 - [Supabase](https://supabase.io/)
-- [AWS](https://aws.amazon.com/)
 
 ## Project Structure
 The code is split into 4 main sections with the main.py file being the entry point to the project:
@@ -34,12 +33,12 @@ The code is split into 4 main sections with the main.py file being the entry poi
 
 ## Live SwaggerDocs
 
-To access the swagger docs you can go to the following url https://9rwoprs2o3.execute-api.eu-west-2.amazonaws.com/prod/docs#/
+To access the swagger docs you can go to the following url https://teamholidaymanager-api.onrender.com/docs/
 
 Screenshot of SwaggerDocs
 ![SwaggerDocs screenshot](static/image.png)
 
-## Local SwaggerDocs
+## Local SwaggerDocs with docker container
 To access the swagger docs you can run the project locally and go to the following url http://localhost:8000/docs
 
 # Getting Started
@@ -75,24 +74,6 @@ To access the swagger docs you can run the project locally and go to the followi
    docker-compose up
 
 2. Go to the following url to access the swagger docs
-    ```sh
-    http://localhost:8000/docs
-    ```
-
-### Running the project without docker
-1. Uncomment the 2nd database url in the .env file and comment out the first one.
-
-2. cd into the src directory
-   ```sh
-   cd src
-   ```
-
-3. Run the following command to start the project
-   ```sh
-   uvicorn main:app --reload
-   ```
-
-4. Go to the following url to access the swagger docs
     ```sh
     http://localhost:8000/docs
     ```
