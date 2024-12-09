@@ -1,3 +1,4 @@
+from os import environ as env
 from unittest.mock import patch
 from fastapi.testclient import TestClient
 from main import app
@@ -7,7 +8,10 @@ from jose import jwt
 
 import unittest
 
-token = jwt.encode({"sub": "test_email", "id": 1, "role_name": "SuperAdmin"}, "Temp", algorithm="HS256")
+SECRET_KEY = env["SECRET_KEY"]
+ALGORITHM = env["ALGORITHM"]
+
+token = jwt.encode({"sub": "test_email", "id": 1, "role_name": "SuperAdmin"}, SECRET_KEY, algorithm=ALGORITHM)
 
 headers = {"Authorization": f"Bearer {token}"}
 
@@ -63,7 +67,7 @@ class Test_Api_Team(TestCase):
 
     @patch("db.crud.getOneRecordByColumnName")
     def test_get_Team_by_name(self, mock_return):
-        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "Admin", "team_name": "Team GG"}, "Temp", algorithm="HS256")
+        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "Admin", "team_name": "Team GG"}, SECRET_KEY, algorithm=ALGORITHM)
         headers = {"Authorization": f"Bearer {token}"}
         # mock the getOneRecordByColumnName method to return a Team
         mock_return.return_value = {
@@ -79,7 +83,7 @@ class Test_Api_Team(TestCase):
 
     @patch("db.crud.getOneRecordByColumnName")
     def test_get_Team_by_name_where_name_does_not_exist(self, mock_return):
-        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "Admin", "team_name": "Team GG"}, "Temp", algorithm="HS256")
+        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "Admin", "team_name": "Team GG"}, SECRET_KEY, algorithm=ALGORITHM)
         headers = {"Authorization": f"Bearer {token}"}
         # mock the getOneRecordByColumnName method to return a Team
         mock_return.side_effect = HTTPException(

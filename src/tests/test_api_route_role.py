@@ -1,3 +1,4 @@
+from os import environ as env
 from unittest.mock import patch
 from fastapi.testclient import TestClient
 from main import app
@@ -7,7 +8,10 @@ from jose import jwt
 
 import unittest
 
-token = jwt.encode({"sub": "test_email", "id": 1}, "Temp", algorithm="HS256")
+SECRET_KEY = env["SECRET_KEY"]
+ALGORITHM = env["ALGORITHM"]
+
+token = jwt.encode({"sub": "test_email", "id": 1}, SECRET_KEY, algorithm=ALGORITHM)
 
 headers = {"Authorization": f"Bearer {token}"}
 
@@ -64,7 +68,7 @@ class Test_Api_Role(TestCase):
     @patch("db.crud.getOneRecordByColumnName")
     def test_get_role_by_name(self, mock_return):
         """Test the get role route of the API"""
-        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "Admin", "team_name": "test_team"}, "Temp", algorithm="HS256")
+        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "Admin", "team_name": "test_team"}, SECRET_KEY, algorithm=ALGORITHM)
         headers = {"Authorization": f"Bearer {token}"}
 
         # mock the getOneRecordByColumnName method to return a role
@@ -83,7 +87,7 @@ class Test_Api_Role(TestCase):
     @patch("db.crud.getOneRecordByColumnName")
     def test_get_role_by_name_where_name_does_not_exist(self, mock_return):
         """Test the get role route of the API"""
-        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "Admin", "team_name": "test_team"}, "Temp", algorithm="HS256")
+        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "Admin", "team_name": "test_team"}, SECRET_KEY, algorithm=ALGORITHM)
         headers = {"Authorization": f"Bearer {token}"}
         # mock the getOneRecordByColumnName method to return raised HTTPException 404
         mock_return.side_effect = HTTPException(
@@ -99,7 +103,7 @@ class Test_Api_Role(TestCase):
     @patch("db.crud.create")
     def test_create_role(self, mock_return):
         """Test the create role route of the API"""
-        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "SuperAdmin", "team_name": "test_team"}, "Temp", algorithm="HS256")
+        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "SuperAdmin", "team_name": "test_team"}, SECRET_KEY, algorithm=ALGORITHM)
         headers = {"Authorization": f"Bearer {token}"}
         
         # mock the create method to do nothing

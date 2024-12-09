@@ -1,3 +1,4 @@
+from os import environ as env
 from unittest.mock import patch
 from fastapi.testclient import TestClient
 from main import app
@@ -7,7 +8,10 @@ from jose import jwt
 
 import unittest
 
-token = jwt.encode({"sub": "test_email", "id": 1}, "Temp", algorithm="HS256")
+SECRET_KEY = env["SECRET_KEY"]
+ALGORITHM = env["ALGORITHM"]
+
+token = jwt.encode({"sub": "test_email", "id": 1}, SECRET_KEY, algorithm=ALGORITHM)
 headers = {"Authorization": f"Bearer {token}"}
 
 class Test_Api_HolidayRequest(TestCase):
@@ -86,7 +90,7 @@ class Test_Api_HolidayRequest(TestCase):
     # Get all holiday-request by team name route tests
     @patch("db.crud.getHolidayRequestsByField")
     def test_get_all_holiday_request_by_team_name_successful(self, mock_return):
-        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "Admin", "team_name": "test_team"}, "Temp", algorithm="HS256")
+        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "Admin", "team_name": "test_team"}, SECRET_KEY, algorithm=ALGORITHM)
         headers = {"Authorization": f"Bearer {token}"}
         # Mock the return value of the getAllRecordsByColumnName function
         mock_return.return_value = [
@@ -129,7 +133,7 @@ class Test_Api_HolidayRequest(TestCase):
 
     @patch("db.crud.getHolidayRequestsByField")
     def test_get_all_holiday_request_by_team_name_where_no_holiday_request_exist(self, mock_return):
-        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "Admin", "team_name": "test_team"}, "Temp", algorithm="HS256")
+        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "Admin", "team_name": "test_team"}, SECRET_KEY, algorithm=ALGORITHM)
         headers = {"Authorization": f"Bearer {token}"}
         # Mock the return value of the getAllRecordsByColumnName function to return HTTPException 404
         mock_return.side_effect = HTTPException(
@@ -145,7 +149,7 @@ class Test_Api_HolidayRequest(TestCase):
     # Get all holiday-request by user id route tests
     @patch("db.crud.getHolidayRequestsByField")
     def test_get_all_holiday_request_by_user_id_successful(self, mock_return):
-        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "User", "team_name": "test_team"}, "Temp", algorithm="HS256")
+        token = jwt.encode({"id": 1, "sub": "test_email", "role_name": "User", "team_name": "test_team"}, SECRET_KEY, algorithm=ALGORITHM)
         headers = {"Authorization": f"Bearer {token}"}
         # Mock the return value of the getAllRecordsByColumnName function
         mock_return.return_value = [
