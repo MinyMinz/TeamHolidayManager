@@ -119,7 +119,7 @@ def upgrade() -> None:
             {
                 "full_name": "User",
                 "email": "normal@gg.com",
-                "password": "$2b$12$szeazF4438sHcUVApqZH1OsdHm7.MbUL2x7wQvVSu3vuSA/t7cTPS",
+                "password": "$2b$12$zN17O.2WKBZinkPdPTnLDeO4DFCT4KTQ3b2z.cVDzR2MjwVW/aHXq",
                 "team_name": "Team Matrix",
                 "role_name": "User",
             },

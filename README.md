@@ -77,3 +77,18 @@ To access the swagger docs you can run the project locally and go to the followi
     ```sh
     http://localhost:8000/docs
     ```
+
+# Example Accounts
+for the sole purpose of testing and for the purpose of the assignment (These will not be real accounts that would be used in a production environment)
+
+Superuser:
+- email: super@super.com
+- password: super
+
+Admin:
+- email: admin@gg.com
+- password: admin
+
+User:
+- email: normal@gg.com
+- password: normal

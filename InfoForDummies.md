@@ -107,4 +107,4 @@ Admin:
 
 User:
 - email: normal@gg.com
-- password: normal123
+- password: normal
