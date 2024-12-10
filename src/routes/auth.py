@@ -7,7 +7,7 @@ from starlette import status
 from models.user import Users as UsersModel
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-from jose import jwt, JWTError
+import jwt
 from pydantic import BaseModel
 from schemas.user import UserAPI as UserAPISchema
 
@@ -76,7 +76,7 @@ def fetch_current_user(token: Annotated[str, Depends(oauth2_bearer)]):
             "role_name": role,
             "team_name": team
         }
-    except JWTError:
+    except jwt.PyJWTError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail= "JWT Error")

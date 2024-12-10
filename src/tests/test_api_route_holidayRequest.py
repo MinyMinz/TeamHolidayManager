@@ -4,7 +4,7 @@ from fastapi.testclient import TestClient
 from main import app
 from unittest import TestCase
 from fastapi import HTTPException, status
-from jose import jwt
+import jwt
 
 import unittest
 
