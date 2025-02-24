@@ -13,6 +13,8 @@ class Users(Base):
     password = Column(String)
     team_name = Column(String, ForeignKey("Teams.name"))
     role_name = Column(String, ForeignKey("Roles.name"))
+    number_of_allocated_holdiays = Column(Integer, nullable=False)
+    number_of_remaining_holidays = Column(Integer, nullable=False)
 
     teamFK = relationship("Teams")
     roleFK = relationship("Roles")

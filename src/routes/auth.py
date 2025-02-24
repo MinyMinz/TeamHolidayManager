@@ -9,7 +9,7 @@ from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 import jwt
 from pydantic import BaseModel
-from schemas.user import UserAPI as UserAPISchema
+from schemas.user import UserAuthAPI as UserAuthAPISchema
 
 authRouter = APIRouter()
 
@@ -35,7 +35,7 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate user credentials.")
     
-    user_data = mapToUserAPISchema(user)
+    user_data = mapToUserAuthAPISchema(user)
     
     token = create_access_token(user_data, timedelta(minutes=30))
 
@@ -52,7 +52,7 @@ def authenticate_user(username: str, password: str):
             detail="Incorrect email or password.")
     return user
 
-def create_access_token(user_data: UserAPISchema, expries_delta: timedelta):
+def create_access_token(user_data: UserAuthAPISchema, expries_delta: timedelta):
     ##NOTE excluded expire for now for demonstrations
     # expire = datetime.now() + expries_delta
     to_encode = {"id": user_data.id, "sub": user_data.email, "role_name": user_data.role_name, "team_name": user_data.team_name}
@@ -88,8 +88,8 @@ def check_if_user_is_superAdmin(payload: dict, detail: str):
             detail= detail
         )
 
-def mapToUserAPISchema(user):
-    return UserAPISchema(
+def mapToUserAuthAPISchema(user):
+    return UserAuthAPISchema(
         id=user["id"],
         email=user["email"],
         full_name=user["full_name"],

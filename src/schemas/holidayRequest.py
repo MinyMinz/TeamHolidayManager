@@ -6,14 +6,14 @@ from datetime import date
 class HolidayRequests(BaseModel):
     """Holiday Request Schema
     \n Attributes:
-        id (int): The id of the holiday request
-        description (str): The description of the holiday request
-        start_date (date): The start date of the holiday request
-        end_date (date): The end date of the holiday request
-        time_of_day (str): The time of day of the holiday request
-        team_name (str): The name of the team the holiday request is for
-        user_id (int): The id of the user the holiday request is for
-        approved (bool): Whether the holiday request has been approved or not"""
+        id (int, Primary Key): Unique identifier for each holiday request.
+        description (string, optional): Brief details about the holiday request.
+        start_date (date): The date when the holiday starts.
+        end_date (date): The date when the holiday ends.
+        time_of_day (string, optional): Specific time of day for the holiday (e.g., morning, afternoon).
+        team_name (string): The name of the team requesting the holiday.
+        user_id (int, Foreign Key): Links the holiday request to a specific user in the system.
+        approved (boolean, optional): Indicates if the holiday request has been approved."""
 
     id: Optional[int] = None
     description: Optional[str] = None

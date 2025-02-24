@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from routes.auth import fetch_current_user, bcrypt_context, check_if_user_is_superAdmin, mapToUserAPISchema
+from routes.auth import fetch_current_user, bcrypt_context, check_if_user_is_superAdmin
 from models.user import Users as UsersModel
 from schemas.user import Users as UserSchema
 from schemas.user import UserAPI as UserAPISchema
@@ -9,28 +9,13 @@ userRouter = APIRouter()
 
 @userRouter.get("", status_code=status.HTTP_200_OK)
 def fetch_user(payload=Depends(fetch_current_user)):
-    """Fetch a user by id, email, or team name or all users
-    \n Args:
-    \n    Optional user_id (int): The id of the user to fetch
-    \n    Optional email (str): The email of the user to fetch
-    \n    Optional team (str): The team name of the users to fetch"""
-    
+    """Fetch a user or users"""    
     if payload["role_name"] == "SuperAdmin":
         return [mapToUserAPISchema(user) for user in crud.getAllRecords(UsersModel, "id")]
     elif payload["role_name"] == "Admin":
         return [mapToUserAPISchema(user) for user in crud.getAllRecordsByColumnName(UsersModel, "team_name", payload["team_name"], "id")]
     else:
         return mapToUserAPISchema(crud.getOneRecordByColumnName(UsersModel, "id", payload["id"]))
-    # # If query parameters are passed, return the user(s) that match the query
-    # if user_id is not None:
-    #     user = crud.getOneRecordByColumnName(UsersModel, "id", user_id)
-    #     return mapToUserAPISchema(user)
-    # elif team is not None:
-    #     users = crud.getAllRecordsByColumnName(UsersModel, "team_name", team, "id")
-    #     return [mapToUserAPISchema(user) for user in users]
-    # else:
-    #     users = crud.getAllRecords(UsersModel, "id")
-    #     return [mapToUserAPISchema(user) for user in users]
 
 @userRouter.post("", status_code=status.HTTP_201_CREATED)
 def create_user(user: UserSchema, payload=Depends(fetch_current_user)):
@@ -70,14 +55,22 @@ def update_user(user: UserAPISchema, payload=Depends(fetch_current_user)):
             detail="You cannot change the role of this user"
         )
     # If the user to update is not the SuperAdmin and the role set in the request is SuperAdmin (i.e. the user is trying to make a user a SuperAdmin) 
-    elif user.role_name == "SuperAdmin":
+    elif user.role_name == "SuperAdmin" and userToUpdate["role_name"] != "SuperAdmin":
         # if above is true throw error HTTP_403_FORBIDDEN
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You cannot assign this role to a user"
         )
+    # Check user is not trying to update their own allocated or remaining holidays unless they are a SuperAdmin
+    if payload["id"] == user.id and (user.allocated_holidays is not None or user.remaining_holidays is not None) and payload["role_name"] != "SuperAdmin":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="You are not authorized to update your allocated or remaining holidays"
+        )
+    # Update the user
     crud.update(UsersModel, "id", dict(user))
 
+#Make sure this only updates the password and nothing more
 @userRouter.patch("/password", status_code=status.HTTP_200_OK)
 def update_user_password(user_id: int, password: str, payload=Depends(fetch_current_user)):
     """Update an existing user password
@@ -118,3 +111,14 @@ def delete_user(user_id: int, payload=Depends(fetch_current_user)):
         )
     # If the user to delete is not the SuperAdmin delete the user
     crud.delete(UsersModel, "id", user_id)
+
+def mapToUserAPISchema(user: UsersModel):
+    return UserAPISchema(
+        id=user["id"],
+        email=user["email"],
+        full_name=user["full_name"],
+        team_name=user["team_name"],
+        role_name=user["role_name"],
+        allocated_holidays=user["number_of_allocated_holdiays"],
+        remaining_holidays=user["number_of_remaining_holidays"]
+    )
