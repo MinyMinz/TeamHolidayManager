@@ -69,12 +69,11 @@ def update_holiday_request(holiday_request: holidaySchema, payload=Depends(fetch
         # Check if superAdmin or Admin has changed approved field to true and update the user's remaining holidays
         if not holiday["approved"] and holiday_request.approved:
             if payload["role_name"] in ["SuperAdmin", "Admin"]:
-                user["remaining_holidays"] = user["number_of_remaining_holidays"] - number_of_request_days
                 try:
+                    user["number_of_remaining_holidays"] = int(user["number_of_remaining_holidays"] - number_of_request_days)
                     crud.update(holidayModel, "id", dict(holiday_request))
-                    #THIS UPADTE IS NOT WORKING
                     crud.update(UsersModel, "id", user)
-                    return {"message": "Holiday request updated successfully"}
+                    return {"message": "Holiday request and user remaining holidays updated successfully"}
                 except Exception as error:
                     raise HTTPException(
                         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

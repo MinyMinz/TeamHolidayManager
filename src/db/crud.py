@@ -116,8 +116,7 @@ def updatePassword(model: any, id: int, data: dict):
             {"password": data["password"]}
         )
         db.commit()
-    except Exception as e:
-        print(e)
+    except Exception:
         db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
 
