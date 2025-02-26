@@ -50,8 +50,12 @@ def update_holiday_request(holiday_request: holidaySchema, payload=Depends(fetch
             detail="You are not authorized to update a holiday request for another user"
         )
 
-    # Calculate the number of days requested based on the start and end dates excluding weekends
-    number_of_request_days = business_days_between_dates(holiday_request.start_date, holiday_request.end_date)
+    if holiday_request.time_of_day not in ["AM", "PM"]:
+    # If time of day is set then the number of days requested is half a day (0.5)
+        number_of_request_days = 0.5
+    else:
+        # Calculate the number of days requested based on the start and end dates excluding weekends
+        number_of_request_days = business_days_between_dates(holiday_request.start_date, holiday_request.end_date)
 
     # Check the user's remaining holidays against the number of days requested
     user = dict(crud.getOneRecordByColumnName(UsersModel, "id", holiday_request.user_id))
