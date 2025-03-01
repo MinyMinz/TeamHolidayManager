@@ -141,57 +141,40 @@ def send_calendar_invite(holiday_request, user):
     # Create the email
     msg = EmailMessage()
     msg["From"] = "minhazrahman.baltic@gmail.com"
-    msg["To"] = "minhazrahman.baltic@gmail.com"
+    msg["To"] = user["email"]
     msg["Subject"] = "Annual Leave Invitation"
     msg.set_content("Your annual leave request has been scheduled. Please find the calendar invite attached.")
 
     # Attach the ICS file
-    ics_content = generate_ics("Annual Leave", start_date, end_date, "Annual Leave", "Out of Office", "minhazrahman.baltic@gmail.com")
+    ics_content = create_ics_event("Annual Leave", "Home", start_date, end_date, "Annual Leave", user["email"])
 
-    msg.add_attachment(ics_content, filename="invite.ics", maintype="text", subtype="calendar")
+    msg.add_attachment(ics_content.encode("utf-8"), maintype="text", subtype="calendar", filename="AnnualLeave.ics")
 
-    # Send the email via SMTP (Gmail example)
+    # Send the email via SMTP (Gmail)
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
         server.login("minhazrahman.baltic@gmail.com", "zows ebik qdqg gwbd")
         server.send_message(msg)
 
     print("Email sent successfully!")
 
-def generate_ics(event_name, start_time, end_time, description, location, attendee_email=None):
-    """Generate .ICS calendar event dynamically"""
-    
-    # Ensure datetime objects are converted to UTC format (ICS requires UTC timestamps)
-    start_time_utc = start_time.strftime("%Y%m%dT%H%M%SZ")
-    end_time_utc = end_time.strftime("%Y%m%dT%H%M%SZ")
-    created_time_utc = datetime.now().strftime("%Y%m%dT%H%M%SZ")
-
-    # Generate a unique ID for the event
-    event_uid = f"{start_time.timestamp()}@phoebusHolidayManager.com"
-
-    # ICS content
-    ics_content = f"""BEGIN:VCALENDAR
-    VERSION:2.0
-    PRODID:-//Holiday Manager//NONSGML v1.0//EN
-    BEGIN:VEVENT
-    UID:{event_uid}
-    DTSTAMP:{created_time_utc}
-    DTSTART:{start_time_utc}
-    DTEND:{end_time_utc}
-    SUMMARY:{event_name}
-    DESCRIPTION:{description}
-    LOCATION:{location}
-    STATUS:CONFIRMED
-    BEGIN:VALARM
-    TRIGGER:-PT15M
-    ACTION:DISPLAY
-    DESCRIPTION:Reminder
-    END:VALARM
-    """
-
-    # Add attendee if provided
-    if attendee_email:
-        ics_content += f"ATTENDEE;CN=Attendee;RSVP=TRUE:mailto:{attendee_email}\n"
-
-    ics_content += "END:VEVENT\nEND:VCALENDAR"
-
-    return ics_content
+def create_ics_event(summary, location, start_time, end_time, description, uid):
+    event = """BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Your Company//Your Application//EN
+BEGIN:VEVENT
+SUMMARY:{summary}
+DTSTART:{start_time}
+DTEND:{end_time}
+LOCATION:{location}
+DESCRIPTION:{description}
+UID:{uid}
+END:VEVENT
+END:VCALENDAR""".format(
+        summary=summary,
+        start_time=start_time.strftime("%Y%m%dT%H%M%S"),
+        end_time=end_time.strftime("%Y%m%dT%H%M%S"),
+        location=location,
+        description=description,
+        uid=uid+str(datetime.now().strftime("%Y%m%dT%H%M%S%f")) + "@phoebussoftwaregmail.com"
+    )
+    return event
