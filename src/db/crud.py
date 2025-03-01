@@ -24,7 +24,6 @@ def getOneRecordByColumnName(model: any, columnName: str, value: any):
     checkIfResultIsEmpty(result)
     return result
 
-
 # get all the results from the query and return it
 def getAllRecords(model: any, columnToOrderBy: str = None):
     """Get all records from the database based the model Order by the column name
@@ -39,7 +38,6 @@ def getAllRecords(model: any, columnToOrderBy: str = None):
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
     checkIfResultIsEmpty(result)
     return result
-
 
 # get all the results from the query and return it based on the column name and value
 def getAllRecordsByColumnName(
@@ -66,7 +64,6 @@ def getAllRecordsByColumnName(
     return result
 
 # Create Operations
-
 # create a record in the database based on the model and data
 def create(model: any, data: dict):
     """Create a record in the database based on the model and data
@@ -119,8 +116,7 @@ def updatePassword(model: any, id: int, data: dict):
             {"password": data["password"]}
         )
         db.commit()
-    except Exception as e:
-        print(e)
+    except Exception:
         db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
 
