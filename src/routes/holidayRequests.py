@@ -1,9 +1,13 @@
+from datetime import datetime
 from fastapi import APIRouter, Depends, status, HTTPException
 from routes.auth import fetch_current_user
 from models.user import Users as UsersModel
 from models.holidayRequests import HolidayRequests as holidayModel
 from schemas.holidayRequest import HolidayRequests as holidaySchema
 from fastapi import APIRouter, status
+from email.message import EmailMessage
+
+import smtplib
 import db.crud as crud
 import numpy as np
 
@@ -77,7 +81,8 @@ def update_holiday_request(holiday_request: holidaySchema, payload=Depends(fetch
                     user["number_of_remaining_holidays"] = int(user["number_of_remaining_holidays"] - number_of_request_days)
                     crud.update(holidayModel, "id", dict(holiday_request))
                     crud.update(UsersModel, "id", user)
-                    return {"message": "Holiday request and user remaining holidays updated successfully"}
+                    send_calendar_invite(holiday_request, user["email"])
+                    return {"message": "Calender invite sent successfully"}
                 except Exception as error:
                     raise HTTPException(
                         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -112,3 +117,63 @@ def business_days_between_dates(start_date, end_date):
     """Calculate the number of business days between two dates"""
     weekdays = np.busday_count(start_date, end_date)
     return weekdays
+
+# When a holiday request is approved send an calendar invite to the user
+def send_calendar_invite(holiday_request, user):
+    # Convert date strings to datetime objects
+    start_date = datetime.combine(holiday_request.start_date, datetime.min.time())
+    end_date = datetime.combine(holiday_request.end_date, datetime.min.time())
+
+    # Check if the holiday request is for a half day
+    if hasattr(holiday_request, "time_of_day") and holiday_request.time_of_day:
+        if holiday_request.time_of_day == "AM":
+            start_date = start_date.replace(hour=9, minute=0)
+            end_date = start_date.replace(hour=12, minute=30)
+        elif holiday_request.time_of_day == "PM":
+            start_date = start_date.replace(hour=13, minute=0)
+            end_date = start_date.replace(hour=16, minute=30)
+    else:
+        # Set the start and end times for a full day
+        start_date = start_date.replace(hour=9, minute=0)
+        end_date = end_date.replace(hour=16, minute=30)
+
+    # Create the email
+    msg = EmailMessage()
+    msg["From"] = "minhazrahman.baltic@gmail.com"
+    msg["To"] = user["email"]
+    msg["Subject"] = "Annual Leave Invitation"
+    msg.set_content("Your annual leave request has been scheduled. Please find the calendar invite attached.")
+
+    # Attach the ICS file
+    ics_content = create_ics_event("Annual Leave", "Home", start_date, end_date, "Annual Leave", user["email"])
+
+    msg.add_attachment(ics_content.encode("utf-8"), maintype="text", subtype="calendar", filename="AnnualLeave.ics")
+
+    # Send the email via SMTP (Gmail)
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login("minhazrahman.baltic@gmail.com", "zows ebik qdqg gwbd")
+        server.send_message(msg)
+
+    print("Email sent successfully!")
+
+def create_ics_event(summary, location, start_time, end_time, description, uid):
+    event = """BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Your Company//Your Application//EN
+BEGIN:VEVENT
+SUMMARY:{summary}
+DTSTART:{start_time}
+DTEND:{end_time}
+LOCATION:{location}
+DESCRIPTION:{description}
+UID:{uid}
+END:VEVENT
+END:VCALENDAR""".format(
+        summary=summary,
+        start_time=start_time.strftime("%Y%m%dT%H%M%S"),
+        end_time=end_time.strftime("%Y%m%dT%H%M%S"),
+        location=location,
+        description=description,
+        uid=uid+str(datetime.now().strftime("%Y%m%dT%H%M%S%f")) + "@phoebussoftwaregmail.com"
+    )
+    return event
