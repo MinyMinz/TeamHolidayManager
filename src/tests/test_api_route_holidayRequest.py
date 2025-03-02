@@ -210,23 +210,24 @@ class Test_Api_HolidayRequest(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
-    # Update holidayRequest route tests
+# Update holidayRequest route tests
     @patch("db.crud.getOneRecordByColumnName")
     @patch("db.crud.update")
     def test_update_holidayRequest_successful(self, mock_get, mock_update):
         # Mock the return value of the getOneRecordByColumnName function
-        mock_get.return_value = {
-            "id": 1,
-            "description": "test_description",
-            "start_date": "2021-01-01",
-            "end_date": "2021-01-01",
-            "time_of_day": "AM",
-            "team_name": "test_team",
-            "user_id": 1,
-        }
-
+        mock_get.return_value = None
+        
         # Mock the return value of the update function
-        mock_update.return_value = None
+        mock_update.return_value = {
+                "id": 1,
+                "email": "test_email",
+                "password": "test_password",
+                "full_name": "full_name",
+                "team_name": "test_team",
+                "role_name": "User",
+                "number_of_remaining_holidays": 20,
+                "approved": False,
+            }
 
         response = self.client.put(
             "/holiday-request",
@@ -239,7 +240,7 @@ class Test_Api_HolidayRequest(TestCase):
                 "team_name": "test_team",
                 "user_id": 1,
             },
-            headers = headers
+            headers=headers
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 

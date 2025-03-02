@@ -41,6 +41,8 @@ class Test_Api_Get_User(TestCase):
                 "full_name": "full_name",
                 "team_name": "test_team",
                 "role_name": "User",
+                "number_of_allocated_holdiays": 25,
+                "number_of_remaining_holidays": 25
             },
             {
                 "id": 2,
@@ -49,6 +51,8 @@ class Test_Api_Get_User(TestCase):
                 "full_name": "full_name2",
                 "team_name": "test_team2",
                 "role_name": "User",
+                "number_of_allocated_holdiays": 25,
+                "number_of_remaining_holidays": 25
             },
         ]
 
@@ -86,6 +90,8 @@ class Test_Api_Get_User(TestCase):
             "full_name": "full_name",
             "team_name": "test_team",
             "role_name": "User",
+            "number_of_allocated_holdiays": 25,
+            "number_of_remaining_holidays": 25            
         }
 
         # call the API endpoint
@@ -125,6 +131,8 @@ class Test_Api_Get_User(TestCase):
                 "full_name": "full_name",
                 "team_name": "test_team",
                 "role_name": "User",
+                "number_of_allocated_holdiays": 25,
+                "number_of_remaining_holidays": 25
             },
             {
                 "id": 2,
@@ -133,6 +141,8 @@ class Test_Api_Get_User(TestCase):
                 "full_name": "full_name2",
                 "team_name": "test_team",
                 "role_name": "User",
+                "number_of_allocated_holdiays": 25,
+                "number_of_remaining_holidays": 25
             },
         ]
 
@@ -183,6 +193,8 @@ class Test_Api_Create_User(TestCase):
                 "full_name": "full_name",
                 "team_name": "test_team",
                 "role_name": "User",
+                "allocated_holidays": 25,
+                "remaining_holidays": 25
             },
             headers = header
         )
@@ -205,6 +217,8 @@ class Test_Api_Create_User(TestCase):
                 "full_name": "full_name",
                 "team_name": "test_team",
                 "role_name": "Admin",
+                "allocated_holidays": 25,
+                "remaining_holidays": 25                
             },
             headers = header
         )
@@ -227,6 +241,8 @@ class Test_Api_Create_User(TestCase):
                 "full_name": "full_name",
                 "team_name": "test_team",
                 "role_name": "SuperAdmin",
+                "allocated_holidays": 25,
+                "remaining_holidays": 25
             },
             headers = header
         )
@@ -247,6 +263,8 @@ class Test_Api_Update_User(TestCase):
     @patch("db.crud.update")
     @patch("db.crud.getOneRecordByColumnName")
     def test_update_user_successful(self, mock_get, mock_update):
+        token = jwt.encode({"sub": "test_email", "id": 1, "role_name":"SuperAdmin"}, SECRET_KEY, algorithm=ALGORITHM)
+        header = {"Authorization": f"Bearer {token}"}
         # Mock the return value of the getOneRecordByColumnName function
         mock_get.return_value = {
             "id": 1,
@@ -254,7 +272,7 @@ class Test_Api_Update_User(TestCase):
             "password": "test_password",
             "full_name": "full_name",
             "team_name": "test_team",
-            "role_name": "User",
+            "role_name": "User"
         }
 
         # Mock the return value of the update function
@@ -264,13 +282,15 @@ class Test_Api_Update_User(TestCase):
             "/users",
             json={
                 "id": 1,
-                "email": "test_email2",
-                "password": "test_password2",
+                "email": "test_email",
+                "password": "test_password",
                 "full_name": "full_name2",
                 "team_name": "test_team",
                 "role_name": "User",
+                "allocated_holidays": 25,
+                "remaining_holidays": 25
             },
-            headers = headers
+            headers = header
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -279,6 +299,8 @@ class Test_Api_Update_User(TestCase):
     def test_update_user_where_role_is_changed_to_admin_successful(
         self, mock_get, mock_update
     ):
+        token = jwt.encode({"sub": "test_email", "id": 1, "role_name":"SuperAdmin"}, SECRET_KEY, algorithm=ALGORITHM)
+        header = {"Authorization": f"Bearer {token}"}
         # Mock the return value of the getOneRecordByColumnName function
         mock_get.return_value = {
             "id": 1,
@@ -286,7 +308,7 @@ class Test_Api_Update_User(TestCase):
             "password": "test_password",
             "full_name": "full_name",
             "team_name": "test_team",
-            "role_name": "User",
+            "role_name": "User"
         }
 
         # Mock the return value of the update function
@@ -301,8 +323,10 @@ class Test_Api_Update_User(TestCase):
                 "full_name": "full_name2",
                 "team_name": "test_team",
                 "role_name": "Admin",
+                "allocated_holidays": 25,
+                "remaining_holidays": 25
             },
-            headers = headers
+            headers = header
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -318,7 +342,7 @@ class Test_Api_Update_User(TestCase):
             "password": "test_password",
             "full_name": "full_name",
             "team_name": "test_team",
-            "role_name": "User",
+            "role_name": "User"
         }
 
         # Mock the return value of the update function
@@ -333,6 +357,8 @@ class Test_Api_Update_User(TestCase):
                 "full_name": "full_name2",
                 "team_name": "test_team",
                 "role_name": "SuperAdmin",
+                "allocated_holidays": 25,
+                "remaining_holidays": 25
             },
             headers = headers
         )
@@ -343,7 +369,7 @@ class Test_Api_Update_User(TestCase):
 
     @patch("db.crud.update")
     @patch("db.crud.getOneRecordByColumnName")
-    def test_update_user_where_user_is_super_admin_and_role_not_changed_successful(self, mock_get, mock_update):
+    def test_update_user_where_user_is_super_admin_and_role_not_changed(self, mock_get, mock_update):
         token = jwt.encode({"sub": "test_email", "id": 1, "role_name":"SuperAdmin"}, SECRET_KEY, algorithm=ALGORITHM)
         header = {"Authorization": f"Bearer {token}"}
         
@@ -354,7 +380,7 @@ class Test_Api_Update_User(TestCase):
             "password": "test_password",
             "full_name": "full_name",
             "team_name": "test_team",
-            "role_name": "SuperAdmin",
+            "role_name": "SuperAdmin"
         }
 
         # Mock the return value of the update function
@@ -368,7 +394,9 @@ class Test_Api_Update_User(TestCase):
                 "password": "test_password2",
                 "full_name": "full_name2",
                 "team_name": "test_team",
-                "role_name": "SuperAdmin",
+                "role_name": "Admin",
+                "allocated_holidays": 25,
+                "remaining_holidays": 25
             },
             headers = header
         )
@@ -386,7 +414,7 @@ class Test_Api_Update_User(TestCase):
             "password": "test_password",
             "full_name": "full_name",
             "team_name": "test_team",
-            "role_name": "SuperAdmin",
+            "role_name": "SuperAdmin"
         }
 
         # Mock the return value of the update function
@@ -401,6 +429,8 @@ class Test_Api_Update_User(TestCase):
                 "full_name": "full_name2",
                 "team_name": "test_team",
                 "role_name": "User",
+                "allocated_holidays": 25,
+                "remaining_holidays": 25
             },
             headers = headers
         )
@@ -408,7 +438,6 @@ class Test_Api_Update_User(TestCase):
         self.assertEqual(
             response.json()["detail"], "You cannot change the role of this user"
         )
-
 
 class Test_Api_Update_User_Password(TestCase):
     """
@@ -434,7 +463,7 @@ class Test_Api_Update_User_Password(TestCase):
             "password": "test_password",
             "full_name": "full_name",
             "team_name": "test_team",
-            "role_name": "User",
+            "role_name": "User"
         }
 
         # Mock the return value of the update function
@@ -470,7 +499,6 @@ class Test_Api_Update_User_Password(TestCase):
             headers = header
         )
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
 
 class Test_Api_Delete_User(TestCase):
     """
@@ -581,7 +609,6 @@ class Test_Api_Delete_User(TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.json()["detail"], "You cannot delete this user")
-
 
 @ddt
 class Test_User_Valdiators(TestCase):
