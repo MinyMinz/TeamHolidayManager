@@ -18,7 +18,8 @@ def getOneRecordByColumnName(model: any, columnName: str, value: any):
             .filter(getattr(model, columnName) == value)
             .first()
         )
-    except Exception:
+    except Exception as e:
+        print(e)
         db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
     checkIfResultIsEmpty(result)
@@ -33,7 +34,8 @@ def getAllRecords(model: any, columnToOrderBy: str = None):
         if columnToOrderBy is not None:
             query = query.order_by(getattr(model, columnToOrderBy))
         result = query.all()
-    except Exception:
+    except Exception as e:
+        print(e)
         db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
     checkIfResultIsEmpty(result)
@@ -57,7 +59,8 @@ def getAllRecordsByColumnName(
         if columnToOrderBy is not None:
             query = query.order_by(getattr(model, columnToOrderBy))
         result = query.all()
-    except Exception:
+    except Exception as e:
+        print(e)
         db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
     checkIfResultIsEmpty(result)
@@ -73,7 +76,8 @@ def create(model: any, data: dict):
         # model(**data) unpacks the dictionary and maps it to the model
         db.add(model(**data))
         db.commit()
-    except Exception:
+    except Exception as e:
+        print(e)
         db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
 
@@ -88,7 +92,8 @@ def update(model: any, columnName: str, data: dict):
             data
         )
         db.commit()
-    except Exception:
+    except Exception as e:
+        print(e)
         db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
 
@@ -101,7 +106,8 @@ def delete(model: any, columnName: str, uid: any):
     try:
         db.query(model).filter(getattr(model, columnName) == uid).delete()
         db.commit()
-    except Exception:
+    except Exception as e:
+        print(e)
         db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
 
@@ -116,7 +122,8 @@ def updatePassword(model: any, id: int, data: dict):
             {"password": data["password"]}
         )
         db.commit()
-    except Exception:
+    except Exception as e:
+        print(e)
         db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
 
@@ -136,7 +143,8 @@ def getHolidayRequestsByField(columnName: str, value: any, columnToOrderBy: str 
         if columnToOrderBy is not None:
             query = query.order_by(getattr(holidayModel, columnToOrderBy))
         result = query.all()
-    except Exception:
+    except Exception as e:
+        print(e)
         db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
     checkIfResultIsEmpty(result)
@@ -150,7 +158,8 @@ def getAllHolidayRequests(columnToOrderBy: str = None):
         if columnToOrderBy is not None:
             query = query.order_by(getattr(holidayModel, columnToOrderBy))
         result = query.all()
-    except Exception:
+    except Exception as e:
+        print(e)
         db.rollback()
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal Error")
     checkIfResultIsEmpty(result)
@@ -163,3 +172,4 @@ def checkIfResultIsEmpty(result: any):
     \n :param result: type any"""
     if not result or len(result) == 0:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "No records found")
+    

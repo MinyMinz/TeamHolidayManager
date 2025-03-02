@@ -34,8 +34,8 @@ def create_user(user: UserSchema, payload=Depends(fetch_current_user)):
         )
     # Hash the password before saving it to the database
     user.password = bcrypt_context.hash(user.password)
-    schemaToModel = mapToUserModel(user)
-    crud.create(UsersModel, schemaToModel)
+    mappedUser = {"id": None, **mapToUserModel(user)}
+    crud.create(UsersModel, mappedUser)
 
 @userRouter.put("", status_code=status.HTTP_200_OK)
 def update_user(user: UserAPISchema, payload=Depends(fetch_current_user)):
@@ -69,7 +69,8 @@ def update_user(user: UserAPISchema, payload=Depends(fetch_current_user)):
             detail="You are not authorized to update your allocated or remaining holidays"
         )
     # Update the user
-    crud.update(UsersModel, "id", dict(user))
+    mappedUser = mapToUserModel(user)
+    crud.update(UsersModel, "id", mappedUser)
 
 #Make sure this only updates the password and nothing more
 @userRouter.patch("/password", status_code=status.HTTP_200_OK)
@@ -95,22 +96,16 @@ def delete_user(user_id: int, payload=Depends(fetch_current_user)):
     \n Args:
     \n    user_id (int): The id of the user to delete"""
     # Check if the user deleting the user is a SuperAdmin
-    check_if_user_is_superAdmin(payload, "You are not authorized to delete a user")
+    check_if_user_is_superAdmin(payload, "You are not authorized to delete users")
 
     # Check if the user to delete is the SuperAdmin as SuperAdmin is a reserved role and should always exist
-    user = crud.getOneRecordByColumnName(UsersModel, "role_name", "SuperAdmin")
+    userToDelete = crud.getOneRecordByColumnName(UsersModel, "id", user_id)
     # If the user to delete is the SuperAdmin throw an error
-    if user["id"] != user_id or payload["role_name"] != "SuperAdmin":
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You cannot delete users"
-        )
-    if user["role_name"] == "SuperAdmin":
+    if userToDelete["role_name"] == "SuperAdmin":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You cannot delete this user"
         )
-    # If the user to delete is not the SuperAdmin delete the user
     crud.delete(UsersModel, "id", user_id)
 
 def mapToUserAPISchema(user: UsersModel):

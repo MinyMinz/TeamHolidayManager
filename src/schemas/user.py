@@ -9,7 +9,10 @@ class Users(BaseModel):
         password (str): User password
         full_name (str): User full name
         team_name (str): User team name
-        role_name (str): User role name"""
+        role_name (str): User role name
+        number_of_allocated_holdiays (int): User allocated holidays
+        number_of_remaining_holidays (int): User remaining 
+        """
 
     email: str
     password: str
