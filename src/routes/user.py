@@ -34,8 +34,7 @@ def create_user(user: UserSchema, payload=Depends(fetch_current_user)):
         )
     # Hash the password before saving it to the database
     user.password = bcrypt_context.hash(user.password)
-    mappedUser = {"id": None, **mapToUserModel(user)}
-    crud.create(UsersModel, mappedUser)
+    crud.create(UsersModel, mapToUserModel(user))
 
 @userRouter.put("", status_code=status.HTTP_200_OK)
 def update_user(user: UserAPISchema, payload=Depends(fetch_current_user)):
@@ -69,8 +68,7 @@ def update_user(user: UserAPISchema, payload=Depends(fetch_current_user)):
             detail="You are not authorized to update your allocated or remaining holidays"
         )
     # Update the user
-    mappedUser = mapToUserModel(user)
-    crud.update(UsersModel, "id", mappedUser)
+    crud.update(UsersModel, "id", mapToUserModel(user, user.id))
 
 #Make sure this only updates the password and nothing more
 @userRouter.patch("/password", status_code=status.HTTP_200_OK)
@@ -119,8 +117,9 @@ def mapToUserAPISchema(user: UsersModel):
         remaining_holidays=user["number_of_remaining_holidays"]
     )
 
-def mapToUserModel(user: UserSchema):
+def mapToUserModel(user: UserSchema, id: int = None):
     return {
+        "id": id,
         "email": user.email,
         "full_name": user.full_name,
         "team_name": user.team_name,
