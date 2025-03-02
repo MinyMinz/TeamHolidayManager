@@ -272,7 +272,9 @@ class Test_Api_Update_User(TestCase):
             "password": "test_password",
             "full_name": "full_name",
             "team_name": "test_team",
-            "role_name": "User"
+            "role_name": "User",
+            "number_of_allocated_holdiays": 25,
+            "number_of_remaining_holdiays": 25
         }
 
         # Mock the return value of the update function
@@ -308,7 +310,9 @@ class Test_Api_Update_User(TestCase):
             "password": "test_password",
             "full_name": "full_name",
             "team_name": "test_team",
-            "role_name": "User"
+            "role_name": "User",
+            "number_of_allocated_holdiays": 25,
+            "number_of_remaining_holdiays": 25
         }
 
         # Mock the return value of the update function
