@@ -79,14 +79,15 @@ def update_holiday_request(holiday_request: holidaySchema, payload=Depends(fetch
             if payload["role_name"] in ["SuperAdmin", "Admin"]:
                 try:
                     user["number_of_remaining_holidays"] = int(user["number_of_remaining_holidays"] - number_of_request_days)
+                    send_calendar_invite(holiday_request, user)
                     crud.update(holidayModel, "id", dict(holiday_request))
                     crud.update(UsersModel, "id", user)
-                    send_calendar_invite(holiday_request, user["email"])
                     return {"message": "Calender invite sent successfully"}
                 except Exception as error:
+                    print(error)
                     raise HTTPException(
                         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                        detail=f"An error occurred while updating the holiday request: {str(error)}"
+                        detail="An error occurred while updating the holiday request: Internal Server error 500" 
                     )
             else:
                 raise HTTPException(
@@ -154,8 +155,6 @@ def send_calendar_invite(holiday_request, user):
         server.login("minhazrahman.baltic@gmail.com", "zows ebik qdqg gwbd")
         server.send_message(msg)
 
-    print("Email sent successfully!")
-
 def create_ics_event(summary, location, start_time, end_time, description, uid):
     event = """BEGIN:VCALENDAR
 VERSION:2.0
@@ -174,6 +173,6 @@ END:VCALENDAR""".format(
         end_time=end_time.strftime("%Y%m%dT%H%M%S"),
         location=location,
         description=description,
-        uid=uid+str(datetime.now().strftime("%Y%m%dT%H%M%S%f")) + "@phoebussoftwaregmail.com"
+        uid=uid
     )
     return event

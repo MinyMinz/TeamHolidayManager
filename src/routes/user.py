@@ -61,12 +61,15 @@ def update_user(user: UserAPISchema, payload=Depends(fetch_current_user)):
             status_code=status.HTTP_403_FORBIDDEN,
             detail="You cannot assign this role to a user"
         )
-    # Check user is not trying to update their own allocated or remaining holidays unless they are a SuperAdmin
-    if payload["id"] == user.id and (user.allocated_holidays is not None or user.remaining_holidays is not None) and payload["role_name"] != "SuperAdmin":
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="You are not authorized to update your allocated or remaining holidays"
-        )
+    
+    # check if allocated_holidays and remaining_holidays have changed
+    if user.allocated_holidays != userToUpdate["number_of_allocated_holdiays"] and user.remaining_holidays != userToUpdate["number_of_remaining_holidays"]:
+        # Check user is not trying to update their own allocated or remaining holidays unless they are a SuperAdmin
+        if payload["id"] == user.id and (user.allocated_holidays is not None or user.remaining_holidays is not None) and payload["role_name"] != "SuperAdmin":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="You are not authorized to update your allocated or remaining holidays"
+            )
     # Update the user
     crud.update(UsersModel, "id", mapToUserModel(user, user.id))
 
